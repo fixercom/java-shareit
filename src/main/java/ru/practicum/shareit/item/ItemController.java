@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -9,9 +10,10 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.validate.groups.OnCreate;
+import ru.practicum.shareit.validate.groups.OnUpdate;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +27,7 @@ public class ItemController {
 
     @PostMapping
     ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                       @RequestBody @Valid ItemDto itemDto,
+                       @RequestBody @Validated(OnCreate.class) ItemDto itemDto,
                        HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDto);
         User owner = userService.getUserById(ownerId);
@@ -51,7 +53,7 @@ public class ItemController {
     @PatchMapping("/{id}")
     ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                        @PathVariable Long id,
-                       @RequestBody ItemDto itemDto,
+                       @RequestBody @Validated(OnUpdate.class) ItemDto itemDto,
                        HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDto);
         User owner = userService.getUserById(ownerId);
