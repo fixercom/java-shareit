@@ -5,8 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.NotOwnerItemException;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.storage.ItemStorage;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,11 +19,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class ItemServiceImpl implements ItemService {
-
     private final ItemStorage itemStorage;
+    private final UserService userService;
 
     @Override
-    public Item createItem(Item item) {
+    public Item createItem(ItemDto itemDto, Long ownerId) {
+        User owner = userService.getUserById(ownerId);
+        Item item = ItemMapper.toItem(itemDto, owner);
         Item itemFromDatabase = itemStorage.save(item);
         log.debug("Item saved in the database with id={}: {}", itemFromDatabase.getId(), item);
         return itemFromDatabase;
@@ -43,7 +49,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item updateItem(Long id, Item newItem) {
+    public Item updateItem(Long id, ItemDto itemDto, Long ownerId) {
+        User owner = userService.getUserById(ownerId);
+        Item newItem = ItemMapper.toItem(itemDto, owner);
         Item oldItem = itemStorage.findById(id);
         Long newItemOwnerId = newItem.getOwner().getId();
         Long oldItemOwnerId = oldItem.getOwner().getId();

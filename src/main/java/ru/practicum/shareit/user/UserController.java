@@ -6,7 +6,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.validate.groups.OnCreate;
 import ru.practicum.shareit.validate.groups.OnUpdate;
@@ -25,8 +24,7 @@ public class UserController {
     @PostMapping
     UserDto createUser(@RequestBody @Validated(OnCreate.class) UserDto userDto, HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), userDto);
-        User user = UserMapper.toUser(userDto);
-        return UserMapper.toUserDto(userService.createUser(user));
+        return UserMapper.toUserDto(userService.createUser(userDto));
     }
 
     @GetMapping("/{id}")
@@ -38,8 +36,7 @@ public class UserController {
     @GetMapping
     List<UserDto> getAllUsers(HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        List<User> allUsers = userService.getAllUsers();
-        return allUsers.stream()
+        return userService.getAllUsers().stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }
@@ -49,8 +46,7 @@ public class UserController {
                        @RequestBody @Validated(OnUpdate.class) UserDto userDto,
                        HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), userDto);
-        User user = UserMapper.toUser(userDto);
-        return UserMapper.toUserDto(userService.updateUser(id, user));
+        return UserMapper.toUserDto(userService.updateUser(id, userDto));
     }
 
     @DeleteMapping("/{id}")

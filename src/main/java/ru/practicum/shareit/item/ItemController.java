@@ -8,8 +8,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.validate.groups.OnCreate;
 import ru.practicum.shareit.validate.groups.OnUpdate;
 
@@ -23,16 +21,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ItemController {
     private final ItemService itemService;
-    private final UserService userService;
 
     @PostMapping
     ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                        @RequestBody @Validated(OnCreate.class) ItemDto itemDto,
                        HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDto);
-        User owner = userService.getUserById(ownerId);
-        Item item = ItemMapper.toItem(itemDto, owner);
-        return ItemMapper.toItemDto(itemService.createItem(item));
+        return ItemMapper.toItemDto(itemService.createItem(itemDto, ownerId));
     }
 
     @GetMapping("/{id}")
@@ -56,9 +51,7 @@ public class ItemController {
                        @RequestBody @Validated(OnUpdate.class) ItemDto itemDto,
                        HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDto);
-        User owner = userService.getUserById(ownerId);
-        Item item = ItemMapper.toItem(itemDto, owner);
-        return ItemMapper.toItemDto(itemService.updateItem(id, item));
+        return ItemMapper.toItemDto(itemService.updateItem(id, itemDto, ownerId));
     }
 
     @GetMapping("/search")

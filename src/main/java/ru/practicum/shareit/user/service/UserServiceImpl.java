@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EmailIsAlreadyInUseException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.storage.UserStorage;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -17,7 +19,8 @@ public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
     @Override
-    public User createUser(User user) {
+    public User createUser(UserDto userDto) {
+        User user = UserMapper.toUser(userDto);
         checkUniqueUserEmail(user);
         User userFromDatabase = userStorage.save(user);
         log.debug("User saved in the database with id={}: {}", userFromDatabase.getId(), user);
@@ -52,7 +55,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(Long id, User newUser) {
+    public User updateUser(Long id, UserDto userDto) {
+        User newUser = UserMapper.toUser(userDto);
         checkUniqueUserEmail(newUser);
         User oldUser = userStorage.findById(id);
         User userWithUpdatedFields = patchFieldsForOldUserObject(oldUser, newUser);
