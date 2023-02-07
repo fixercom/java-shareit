@@ -12,7 +12,6 @@ import ru.practicum.shareit.validate.groups.OnUpdate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -36,9 +35,7 @@ public class UserController {
     @GetMapping
     List<UserDto> getAllUsers(HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return userService.getAllUsers().stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
+        return UserMapper.toUserDtoList(userService.getAllUsers());
     }
 
     @PatchMapping("/{id}")

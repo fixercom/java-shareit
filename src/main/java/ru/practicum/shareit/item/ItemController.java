@@ -6,14 +6,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.validate.groups.OnCreate;
 import ru.practicum.shareit.validate.groups.OnUpdate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/items")
@@ -39,10 +37,7 @@ public class ItemController {
     @GetMapping()
     List<ItemDto> getAllItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long ownerId, HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        List<Item> allOwnerItems = itemService.getAllItemsByOwnerId(ownerId);
-        return allOwnerItems.stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return ItemMapper.toItemDtoList(itemService.getAllItemsByOwnerId(ownerId));
     }
 
     @PatchMapping("/{id}")
@@ -57,9 +52,7 @@ public class ItemController {
     @GetMapping("/search")
     List<ItemDto> getItemsByText(@RequestParam("text") String text, HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return itemService.getItemsByText(text).stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return ItemMapper.toItemDtoList(itemService.getItemsByText(text));
     }
 }
 
