@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.util.HeaderName;
 import ru.practicum.shareit.validate.groups.OnCreate;
 import ru.practicum.shareit.validate.groups.OnUpdate;
 
@@ -21,7 +22,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+    ItemDto createItem(@RequestHeader(HeaderName.ITEM_OWNER_ID) Long ownerId,
                        @RequestBody @Validated(OnCreate.class) ItemDto itemDto,
                        HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDto);
@@ -35,13 +36,14 @@ public class ItemController {
     }
 
     @GetMapping()
-    List<ItemDto> getAllItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long ownerId, HttpServletRequest request) {
+    List<ItemDto> getAllItemsByOwnerId(@RequestHeader(HeaderName.ITEM_OWNER_ID) Long ownerId,
+                                       HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
         return ItemMapper.toItemDtoList(itemService.getAllItemsByOwnerId(ownerId));
     }
 
     @PatchMapping("/{id}")
-    ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+    ItemDto updateItem(@RequestHeader(HeaderName.ITEM_OWNER_ID) Long ownerId,
                        @PathVariable Long id,
                        @RequestBody @Validated(OnUpdate.class) ItemDto itemDto,
                        HttpServletRequest request) {
