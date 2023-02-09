@@ -1,6 +1,6 @@
-package ru.practicum.shareit.validate.validator;
+package ru.practicum.shareit.validation.validator;
 
-import ru.practicum.shareit.validate.annotation.NotBlankButMayBeNull;
+import ru.practicum.shareit.validation.annotation.NotBlankButMayBeNull;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

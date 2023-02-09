@@ -8,7 +8,7 @@ import ru.practicum.shareit.exception.EmailIsAlreadyInUseException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;

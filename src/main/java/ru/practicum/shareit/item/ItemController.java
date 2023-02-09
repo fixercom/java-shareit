@@ -8,8 +8,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.util.HeaderName;
-import ru.practicum.shareit.validate.groups.OnCreate;
-import ru.practicum.shareit.validate.groups.OnUpdate;
+import ru.practicum.shareit.validation.groups.OnCreate;
+import ru.practicum.shareit.validation.groups.OnUpdate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

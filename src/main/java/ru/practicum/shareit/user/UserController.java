@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.validate.groups.OnCreate;
-import ru.practicum.shareit.validate.groups.OnUpdate;
+import ru.practicum.shareit.validation.groups.OnCreate;
+import ru.practicum.shareit.validation.groups.OnUpdate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

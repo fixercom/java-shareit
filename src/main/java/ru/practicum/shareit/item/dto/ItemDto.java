@@ -2,10 +2,10 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.validate.annotation.NotBlankButMayBeNull;
-import ru.practicum.shareit.validate.groups.OnCreate;
-import ru.practicum.shareit.validate.groups.OnUpdate;
+import ru.practicum.shareit.request.entity.ItemRequest;
+import ru.practicum.shareit.validation.annotation.NotBlankButMayBeNull;
+import ru.practicum.shareit.validation.groups.OnCreate;
+import ru.practicum.shareit.validation.groups.OnUpdate;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

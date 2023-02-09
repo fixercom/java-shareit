@@ -1,9 +1,9 @@
-package ru.practicum.shareit.booking.model;
+package ru.practicum.shareit.booking.entity;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.item.entity.Item;
+import ru.practicum.shareit.user.entity.User;
 
 import java.time.LocalDateTime;
 

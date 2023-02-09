@@ -2,7 +2,7 @@ package ru.practicum.shareit.user.mapper;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.entity.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
