@@ -21,21 +21,22 @@ import java.util.List;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
+    private final ItemMapper itemMapper;
 
     @Override
     public Item createItem(ItemDto itemDto, Long ownerId) {
         User owner = userService.getUserById(ownerId);
-        Item item = ItemMapper.toItem(itemDto, owner);
-        Item itemFromDatabase = itemRepository.save(item);
-        log.debug("Item saved in the database with id={}: {}", itemFromDatabase.getId(), item);
-        return itemFromDatabase;
+        Item item = itemMapper.toItem(itemDto, owner);
+        Item savedItem = itemRepository.save(item);
+        log.debug("Item saved in the database with id={}: {}", savedItem.getId(), item);
+        return savedItem;
     }
 
     @Override
     public Item getItemById(Long id) {
-        Item itemFromDatabase = itemRepository.findById(id).orElseThrow(() -> new ItemNotFoundException(id));
-        log.debug("Item with id={} was obtained from the database: {}", id, itemFromDatabase);
-        return itemFromDatabase;
+        Item item = itemRepository.findById(id).orElseThrow(() -> new ItemNotFoundException(id));
+        log.debug("Item with id={} was obtained from the database: {}", id, item);
+        return item;
     }
 
     @Override
@@ -46,19 +47,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item updateItem(Long id, ItemDto itemDto, Long ownerId) {
-        User owner = userService.getUserById(ownerId);
-        Item newItem = ItemMapper.toItem(itemDto, owner);
+    public Item patchItem(Long id, ItemDto itemDto, Long ownerId) {
         Item oldItem = getItemById(id);
-        Long newItemOwnerId = newItem.getOwner().getId();
         Long oldItemOwnerId = oldItem.getOwner().getId();
-        if (!newItemOwnerId.equals(oldItemOwnerId)) {
-            throw new NotOwnerItemException(id, newItemOwnerId);
-        }
-        Item itemWithUpdatedFields = patchFieldsForOldItemObject(oldItem, newItem);
-        Item updatedItemFromDatabase = itemRepository.save(itemWithUpdatedFields);
-        log.debug("Item with id={} successfully updated in the database: {}", id, updatedItemFromDatabase);
-        return updatedItemFromDatabase;
+        checkItemOwnerId(id, oldItemOwnerId, ownerId);
+        Item oldItemWithPatch = itemMapper.patchItemFromDto(itemDto, oldItem);
+        Item patchedItem = itemRepository.save(oldItemWithPatch);
+        log.debug("Item with id={} successfully updated in the database: {}", id, patchedItem);
+        return patchedItem;
     }
 
     @Override
@@ -69,11 +65,10 @@ public class ItemServiceImpl implements ItemService {
         return items;
     }
 
-    private Item patchFieldsForOldItemObject(Item oldItem, Item newItem) {
-        oldItem.setName(newItem.getName() == null ? oldItem.getName() : newItem.getName());
-        oldItem.setDescription(newItem.getDescription() == null ? oldItem.getDescription() : newItem.getDescription());
-        oldItem.setAvailable(newItem.getAvailable() == null ? oldItem.getAvailable() : newItem.getAvailable());
-        return oldItem;
+    private void checkItemOwnerId(Long itemId, Long oldOwnerId, Long newOwnerId) {
+        if (!oldOwnerId.equals(newOwnerId)) {
+            throw new NotOwnerItemException(itemId, newOwnerId);
+        }
     }
 }
 

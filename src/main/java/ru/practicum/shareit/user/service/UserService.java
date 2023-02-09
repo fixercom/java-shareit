@@ -12,7 +12,7 @@ public interface UserService {
 
     List<User> getAllUsers();
 
-    User updateUser(Long id, UserDto userDto);
+    User patchUser(Long id, UserDto userDto);
 
     void deleteUser(Long id);
 }

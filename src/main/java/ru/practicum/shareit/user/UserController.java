@@ -8,7 +8,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.validation.groups.OnCreate;
-import ru.practicum.shareit.validation.groups.OnUpdate;
+import ru.practicum.shareit.validation.groups.OnPatch;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -19,31 +19,32 @@ import java.util.List;
 @Slf4j
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping
     UserDto createUser(@RequestBody @Validated(OnCreate.class) UserDto userDto, HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), userDto);
-        return UserMapper.toUserDto(userService.createUser(userDto));
+        return userMapper.toUserDto(userService.createUser(userDto));
     }
 
     @GetMapping("/{id}")
     UserDto getUserById(@PathVariable Long id, HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return UserMapper.toUserDto(userService.getUserById(id));
+        return userMapper.toUserDto(userService.getUserById(id));
     }
 
     @GetMapping
     List<UserDto> getAllUsers(HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return UserMapper.toUserDtoList(userService.getAllUsers());
+        return userMapper.toUserDtoList(userService.getAllUsers());
     }
 
     @PatchMapping("/{id}")
-    UserDto updateUser(@PathVariable Long id,
-                       @RequestBody @Validated(OnUpdate.class) UserDto userDto,
-                       HttpServletRequest request) {
+    UserDto patchUser(@PathVariable Long id,
+                      @RequestBody @Validated(OnPatch.class) UserDto userDto,
+                      HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), userDto);
-        return UserMapper.toUserDto(userService.updateUser(id, userDto));
+        return userMapper.toUserDto(userService.patchUser(id, userDto));
     }
 
     @DeleteMapping("/{id}")

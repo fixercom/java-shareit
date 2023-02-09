@@ -5,7 +5,7 @@ import lombok.Data;
 import ru.practicum.shareit.request.entity.ItemRequest;
 import ru.practicum.shareit.validation.annotation.NotBlankButMayBeNull;
 import ru.practicum.shareit.validation.groups.OnCreate;
-import ru.practicum.shareit.validation.groups.OnUpdate;
+import ru.practicum.shareit.validation.groups.OnPatch;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -17,10 +17,10 @@ public class ItemDto {
     @Null(groups = OnCreate.class, message = "id must be null")
     private Long id;
     @NotBlank(groups = OnCreate.class, message = "name must not be empty or null")
-    @NotBlankButMayBeNull(groups = OnUpdate.class, message = "name must not be empty")
+    @NotBlankButMayBeNull(groups = OnPatch.class, message = "name must not be empty")
     private String name;
     @NotBlank(groups = OnCreate.class, message = "description must not be empty or null")
-    @NotBlankButMayBeNull(groups = OnUpdate.class, message = "description must not be empty")
+    @NotBlankButMayBeNull(groups = OnPatch.class, message = "description must not be empty")
     private String description;
     @NotNull(groups = OnCreate.class, message = "available must not be null")
     private Boolean available;

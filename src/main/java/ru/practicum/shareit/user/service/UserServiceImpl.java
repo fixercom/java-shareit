@@ -19,41 +19,41 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
     @Transactional
     public User createUser(UserDto userDto) {
-        User user = UserMapper.toUser(userDto);
-        checkUniqueEmail(user);
-        User userFromDatabase = userRepository.save(user);
-        log.debug("User saved in the database with id={}: {}", userFromDatabase.getId(), user);
-        return userFromDatabase;
+        User user = userMapper.toUser(userDto);
+        checkUniqueEmail(user.getEmail());
+        User createdUser = userRepository.save(user);
+        log.debug("User saved in the database with id={}: {}", createdUser.getId(), user);
+        return createdUser;
     }
 
     @Override
     public User getUserById(Long id) {
-        User userFromDatabase = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        log.debug("User with id={} was obtained from the database: {}", id, userFromDatabase);
-        return userFromDatabase;
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        log.debug("User with id={} was obtained from the database: {}", id, user);
+        return user;
     }
 
     @Override
     public List<User> getAllUsers() {
-        List<User> allUsersFromDatabase = userRepository.findAll();
-        log.debug("All users were obtained from the database: {}", allUsersFromDatabase);
-        return allUsersFromDatabase;
+        List<User> allUsers = userRepository.findAll();
+        log.debug("All users were obtained from the database: {}", allUsers);
+        return allUsers;
     }
 
     @Override
     @Transactional
-    public User updateUser(Long id, UserDto userDto) {
-        User newUser = UserMapper.toUser(userDto);
-        checkUniqueEmail(newUser);
+    public User patchUser(Long id, UserDto userDto) {
         User oldUser = getUserById(id);
-        User userWithUpdatedFields = patchFieldsForOldUserObject(oldUser, newUser);
-        User updatedUserFromDatabase = userRepository.save(userWithUpdatedFields);
-        log.debug("User with id={} successfully updated in the database: {}", id, updatedUserFromDatabase);
-        return updatedUserFromDatabase;
+        checkUniqueEmail(userDto.getEmail());
+        User oldUserWithPatch = userMapper.patchUserFromDto(userDto, oldUser);
+        User patchedUser = userRepository.save(oldUserWithPatch);
+        log.debug("User with id={} successfully updated in the database: {}", id, patchedUser);
+        return patchedUser;
     }
 
     @Override
@@ -67,16 +67,9 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void checkUniqueEmail(User user) {
-        String email = user.getEmail();
+    private void checkUniqueEmail(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new EmailIsAlreadyInUseException(email);
         }
-    }
-
-    private User patchFieldsForOldUserObject(User oldUser, User newUser) {
-        oldUser.setName(newUser.getName() == null ? oldUser.getName() : newUser.getName());
-        oldUser.setEmail(newUser.getEmail() == null ? oldUser.getEmail() : newUser.getEmail());
-        return oldUser;
     }
 }

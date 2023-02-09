@@ -9,7 +9,7 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.util.HeaderName;
 import ru.practicum.shareit.validation.groups.OnCreate;
-import ru.practicum.shareit.validation.groups.OnUpdate;
+import ru.practicum.shareit.validation.groups.OnPatch;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -20,41 +20,42 @@ import java.util.List;
 @Slf4j
 public class ItemController {
     private final ItemService itemService;
+    private final ItemMapper itemMapper;
 
     @PostMapping
     ItemDto createItem(@RequestHeader(HeaderName.ITEM_OWNER_ID) Long ownerId,
                        @RequestBody @Validated(OnCreate.class) ItemDto itemDto,
                        HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDto);
-        return ItemMapper.toItemDto(itemService.createItem(itemDto, ownerId));
+        return itemMapper.toItemDto(itemService.createItem(itemDto, ownerId));
     }
 
     @GetMapping("/{id}")
     ItemDto getItemById(@PathVariable Long id, HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return ItemMapper.toItemDto(itemService.getItemById(id));
+        return itemMapper.toItemDto(itemService.getItemById(id));
     }
 
     @GetMapping()
     List<ItemDto> getAllItemsByOwnerId(@RequestHeader(HeaderName.ITEM_OWNER_ID) Long ownerId,
                                        HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return ItemMapper.toItemDtoList(itemService.getAllItemsByOwnerId(ownerId));
+        return itemMapper.toItemDtoList(itemService.getAllItemsByOwnerId(ownerId));
     }
 
     @PatchMapping("/{id}")
-    ItemDto updateItem(@RequestHeader(HeaderName.ITEM_OWNER_ID) Long ownerId,
-                       @PathVariable Long id,
-                       @RequestBody @Validated(OnUpdate.class) ItemDto itemDto,
-                       HttpServletRequest request) {
+    ItemDto patchItem(@RequestHeader(HeaderName.ITEM_OWNER_ID) Long ownerId,
+                      @PathVariable Long id,
+                      @RequestBody @Validated(OnPatch.class) ItemDto itemDto,
+                      HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDto);
-        return ItemMapper.toItemDto(itemService.updateItem(id, itemDto, ownerId));
+        return itemMapper.toItemDto(itemService.patchItem(id, itemDto, ownerId));
     }
 
     @GetMapping("/search")
     List<ItemDto> getAvailableItemsByText(@RequestParam("text") String text, HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return ItemMapper.toItemDtoList(itemService.getAvailableItemsContainingInNameOrDescription(text));
+        return itemMapper.toItemDtoList(itemService.getAvailableItemsContainingInNameOrDescription(text));
     }
 }
 

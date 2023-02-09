@@ -1,4 +1,4 @@
 package ru.practicum.shareit.validation.groups;
 
-public interface OnUpdate {
+public interface OnPatch {
 }

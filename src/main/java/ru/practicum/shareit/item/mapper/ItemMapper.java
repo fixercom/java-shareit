@@ -1,37 +1,23 @@
 package ru.practicum.shareit.item.mapper;
 
-import lombok.experimental.UtilityClass;
+import org.mapstruct.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.user.entity.User;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-@UtilityClass
-public class ItemMapper {
-    public static ItemDto toItemDto(Item item) {
-        return ItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .build();
-    }
+@Mapper
+public interface ItemMapper {
+    @Mapping(target = "id", source = "itemDto.id")
+    @Mapping(target = "name", source = "itemDto.name")
+    Item toItem(ItemDto itemDto, User owner);
 
-    public static Item toItem(ItemDto itemDto, User owner) {
-        return Item.builder()
-                .id(itemDto.getId())
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.getAvailable())
-                .owner(owner)
-                .build();
-    }
+    ItemDto toItemDto(Item item);
 
-    public static List<ItemDto> toItemDtoList(List<Item> items){
-        return items.stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
-    }
+    List<ItemDto> toItemDtoList(List<Item> items);
+
+    @Mapping(target = "owner", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Item patchItemFromDto(ItemDto itemDto, @MappingTarget Item item);
 }
