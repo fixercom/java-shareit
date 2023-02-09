@@ -8,7 +8,7 @@ import ru.practicum.shareit.exception.NotOwnerItemException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.storage.ItemStorage;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -19,31 +19,28 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class ItemServiceImpl implements ItemService {
-    private final ItemStorage itemStorage;
+    private final ItemRepository itemRepository;
     private final UserService userService;
 
     @Override
     public Item createItem(ItemDto itemDto, Long ownerId) {
         User owner = userService.getUserById(ownerId);
         Item item = ItemMapper.toItem(itemDto, owner);
-        Item itemFromDatabase = itemStorage.save(item);
+        Item itemFromDatabase = itemRepository.save(item);
         log.debug("Item saved in the database with id={}: {}", itemFromDatabase.getId(), item);
         return itemFromDatabase;
     }
 
     @Override
     public Item getItemById(Long id) {
-        Item itemFromDatabase = itemStorage.findById(id);
-        if (itemFromDatabase == null) {
-            throw new ItemNotFoundException(id);
-        }
+        Item itemFromDatabase = itemRepository.findById(id).orElseThrow(() -> new ItemNotFoundException(id));
         log.debug("Item with id={} was obtained from the database: {}", id, itemFromDatabase);
         return itemFromDatabase;
     }
 
     @Override
     public List<Item> getAllItemsByOwnerId(Long id) {
-        List<Item> allOwnerItems = itemStorage.findAllItemsByOwnerId(id);
+        List<Item> allOwnerItems = itemRepository.findAllByOwnerId(id);
         log.debug("All items for owner with id={} were obtained from the database: {}", id, allOwnerItems);
         return allOwnerItems;
     }
@@ -52,21 +49,22 @@ public class ItemServiceImpl implements ItemService {
     public Item updateItem(Long id, ItemDto itemDto, Long ownerId) {
         User owner = userService.getUserById(ownerId);
         Item newItem = ItemMapper.toItem(itemDto, owner);
-        Item oldItem = itemStorage.findById(id);
+        Item oldItem = getItemById(id);
         Long newItemOwnerId = newItem.getOwner().getId();
         Long oldItemOwnerId = oldItem.getOwner().getId();
         if (!newItemOwnerId.equals(oldItemOwnerId)) {
             throw new NotOwnerItemException(id, newItemOwnerId);
         }
         Item itemWithUpdatedFields = patchFieldsForOldItemObject(oldItem, newItem);
-        Item updatedItemFromDatabase = itemStorage.update(id, itemWithUpdatedFields);
+        Item updatedItemFromDatabase = itemRepository.save(itemWithUpdatedFields);
         log.debug("Item with id={} successfully updated in the database: {}", id, updatedItemFromDatabase);
         return updatedItemFromDatabase;
     }
 
     @Override
-    public List<Item> getItemsByText(String text) {
-        List<Item> items = text.isEmpty() ? Collections.emptyList() : itemStorage.findItemsByText(text);
+    public List<Item> getAvailableItemsContainingInNameOrDescription(String text) {
+        List<Item> items = text.isEmpty() ? Collections.emptyList() :
+                itemRepository.findAvailableItemsContainingInNameOrDescription(text);
         log.debug("Items containing the text={} are received from the database: {}", text, items);
         return items;
     }

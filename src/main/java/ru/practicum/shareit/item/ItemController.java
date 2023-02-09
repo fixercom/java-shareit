@@ -52,9 +52,9 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    List<ItemDto> getItemsByText(@RequestParam("text") String text, HttpServletRequest request) {
+    List<ItemDto> getAvailableItemsByText(@RequestParam("text") String text, HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return ItemMapper.toItemDtoList(itemService.getItemsByText(text));
+        return ItemMapper.toItemDtoList(itemService.getAvailableItemsContainingInNameOrDescription(text));
     }
 }
 
