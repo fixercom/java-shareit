@@ -13,5 +13,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             " where upper(item.name) like upper(concat('%', ?1, '%'))" +
             "    or upper(item.description) like upper(concat('%', ?1, '%'))" +
             "   and item.available = true")
-    List<Item> findAvailableItemsContainingInNameOrDescription(String text);
+    List<Item> findAvailableItemsByText(String text);
 }

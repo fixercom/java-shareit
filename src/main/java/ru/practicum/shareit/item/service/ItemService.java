@@ -14,5 +14,5 @@ public interface ItemService {
 
     Item patchItem(Long id, ItemDto itemDto, Long ownerId);
 
-    List<Item> getAvailableItemsContainingInNameOrDescription(String text);
+    List<Item> getAvailableItemsByText(String text);
 }

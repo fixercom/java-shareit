@@ -55,7 +55,7 @@ public class ItemController {
     @GetMapping("/search")
     List<ItemDto> getAvailableItemsByText(@RequestParam("text") String text, HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return itemMapper.toItemDtoList(itemService.getAvailableItemsContainingInNameOrDescription(text));
+        return itemMapper.toItemDtoList(itemService.getAvailableItemsByText(text));
     }
 }
 

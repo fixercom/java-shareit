@@ -58,9 +58,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> getAvailableItemsContainingInNameOrDescription(String text) {
+    public List<Item> getAvailableItemsByText(String text) {
         List<Item> items = text.isEmpty() ? Collections.emptyList() :
-                itemRepository.findAvailableItemsContainingInNameOrDescription(text);
+                itemRepository.findAvailableItemsByText(text);
         log.debug("Items containing the text={} are received from the database: {}", text, items);
         return items;
     }
