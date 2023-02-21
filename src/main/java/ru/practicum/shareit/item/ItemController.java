@@ -4,12 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.util.HeaderName;
 import ru.practicum.shareit.validation.groups.OnCreate;
-import ru.practicum.shareit.validation.groups.OnPatch;
+import ru.practicum.shareit.validation.groups.OnUpdate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -20,42 +19,51 @@ import java.util.List;
 @Slf4j
 public class ItemController {
     private final ItemService itemService;
-    private final ItemMapper itemMapper;
 
     @PostMapping
-    ItemDto createItem(@RequestHeader(HeaderName.ITEM_OWNER_ID) Long ownerId,
-                       @RequestBody @Validated(OnCreate.class) ItemDto itemDto,
-                       HttpServletRequest request) {
-        log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDto);
-        return itemMapper.toItemDto(itemService.createItem(itemDto, ownerId));
+    ItemDtoResponse createItem(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
+                               @RequestBody @Validated(OnCreate.class) ItemDtoRequest itemDtoRequest,
+                               HttpServletRequest request) {
+        log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDtoRequest);
+        return itemService.createItem(itemDtoRequest, userId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    CommentDtoResponse createComment(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
+                                     @PathVariable Long itemId, HttpServletRequest request,
+                                     @RequestBody @Validated(OnCreate.class) CommentDtoRequest commentDtoRequest) {
+        log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
+        return itemService.createComment(itemId, commentDtoRequest, userId);
     }
 
     @GetMapping("/{id}")
-    ItemDto getItemById(@PathVariable Long id, HttpServletRequest request) {
+    ItemDtoResponseWithDate getItemById(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
+                                        @PathVariable Long id,
+                                        HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return itemMapper.toItemDto(itemService.getItemById(id));
+        return itemService.getItemById(id, userId);
     }
 
     @GetMapping()
-    List<ItemDto> getAllItemsByOwnerId(@RequestHeader(HeaderName.ITEM_OWNER_ID) Long ownerId,
-                                       HttpServletRequest request) {
+    List<ItemDtoResponseWithDate> getAllItemsByOwnerId(@RequestHeader(HeaderName.SHARER_USER_ID) Long ownerId,
+                                                       HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return itemMapper.toItemDtoList(itemService.getAllItemsByOwnerId(ownerId));
+        return itemService.getAllItemsByOwnerId(ownerId);
     }
 
     @PatchMapping("/{id}")
-    ItemDto patchItem(@RequestHeader(HeaderName.ITEM_OWNER_ID) Long ownerId,
-                      @PathVariable Long id,
-                      @RequestBody @Validated(OnPatch.class) ItemDto itemDto,
-                      HttpServletRequest request) {
-        log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDto);
-        return itemMapper.toItemDto(itemService.patchItem(id, itemDto, ownerId));
+    ItemDtoResponse updateItem(@RequestHeader(HeaderName.SHARER_USER_ID) Long ownerId,
+                               @PathVariable Long id,
+                               @RequestBody @Validated(OnUpdate.class) ItemDtoRequest itemDtoRequest,
+                               HttpServletRequest request) {
+        log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDtoRequest);
+        return itemService.updateItem(id, itemDtoRequest, ownerId);
     }
 
     @GetMapping("/search")
-    List<ItemDto> getAvailableItemsByText(@RequestParam("text") String text, HttpServletRequest request) {
+    List<ItemDtoResponse> getAvailableItemsByText(@RequestParam String text, HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return itemMapper.toItemDtoList(itemService.getAvailableItemsByText(text));
+        return itemService.getAvailableItemsByText(text);
     }
 }
 

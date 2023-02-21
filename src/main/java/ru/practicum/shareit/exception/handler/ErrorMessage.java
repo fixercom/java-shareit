@@ -7,5 +7,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ErrorMessage {
     private final Integer statusCode;
-    private final String message;
+    private final String error;
 }

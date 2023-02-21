@@ -15,27 +15,26 @@ import java.util.Objects;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "items")
-public class Item {
+@Table(name = "comments")
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 100, nullable = false)
-    private String name;
-    @Column(length = 500, nullable = false)
-    private String description;
-    @Column(nullable = false)
-    private Boolean available;
-    @ManyToOne(optional = false)
+    @Column(length = 1000, nullable = false)
+    private String text;
+    @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User owner;
+    private Item item;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User author;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Item item = (Item) o;
-        return id.equals(item.id);
+        Comment comment = (Comment) o;
+        return id.equals(comment.id);
     }
 
     @Override

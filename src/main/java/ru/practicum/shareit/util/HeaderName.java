@@ -4,5 +4,5 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class HeaderName {
-    public static final String ITEM_OWNER_ID = "X-Sharer-User-Id";
+    public static final String SHARER_USER_ID = "X-Sharer-User-Id";
 }
