@@ -22,10 +22,10 @@ public class Comment {
     private Long id;
     @Column(length = 1000, nullable = false)
     private String text;
-    @ManyToOne
+    @ManyToOne(optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Item item;
-    @ManyToOne
+    @ManyToOne(optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User author;
 

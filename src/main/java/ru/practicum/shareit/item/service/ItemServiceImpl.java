@@ -88,6 +88,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentDtoResponse createComment(Long itemId, CommentDtoRequest commentDtoRequest, Long userId) {
         checkUserHasBookedItemInThePast(userId, itemId);
         Item item = getItemByIdWithoutCheckAccess(itemId);

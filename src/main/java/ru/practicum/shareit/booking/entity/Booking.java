@@ -32,7 +32,7 @@ public class Booking {
     @ManyToOne(optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User booker;
-    @Column(nullable = false)
+    @Column(length = 15, nullable = false)
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
