@@ -1,23 +1,26 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
+import ru.practicum.shareit.request.entity.ItemRequest;
 import ru.practicum.shareit.validation.annotation.NotBlankButMayBeNull;
 import ru.practicum.shareit.validation.groups.OnCreate;
 import ru.practicum.shareit.validation.groups.OnUpdate;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 @Data
-public class UserDto {
+public class ItemDtoRequest {
     @Null(groups = OnCreate.class, message = "id must be null")
     private Long id;
     @NotBlank(groups = OnCreate.class, message = "name must not be empty or null")
     @NotBlankButMayBeNull(groups = OnUpdate.class, message = "name must not be empty")
     private String name;
-    @Email(groups = {OnCreate.class, OnUpdate.class}, message = "incorrect email address")
-    @NotBlank(groups = OnCreate.class, message = "email address must not be empty or null")
-    @NotBlankButMayBeNull(groups = OnUpdate.class, message = "email address must not be empty")
-    private String email;
+    @NotBlank(groups = OnCreate.class, message = "description must not be empty or null")
+    @NotBlankButMayBeNull(groups = OnUpdate.class, message = "description must not be empty")
+    private String description;
+    @NotNull(groups = OnCreate.class, message = "available must not be null")
+    private Boolean available;
+    private ItemRequest request;
 }

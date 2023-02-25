@@ -2,18 +2,16 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.util.HeaderName;
+import ru.practicum.shareit.validation.groups.OnCreate;
+import ru.practicum.shareit.validation.groups.OnUpdate;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/items")
@@ -21,50 +19,51 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ItemController {
     private final ItemService itemService;
-    private final UserService userService;
 
     @PostMapping
-    ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                       @RequestBody @Valid ItemDto itemDto,
-                       HttpServletRequest request) {
-        log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDto);
-        User owner = userService.getUserById(ownerId);
-        Item item = ItemMapper.toItem(itemDto, owner);
-        return ItemMapper.toItemDto(itemService.createItem(item));
+    ItemDtoResponse createItem(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
+                               @RequestBody @Validated(OnCreate.class) ItemDtoRequest itemDtoRequest,
+                               HttpServletRequest request) {
+        log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDtoRequest);
+        return itemService.createItem(itemDtoRequest, userId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    CommentDtoResponse createComment(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
+                                     @PathVariable Long itemId, HttpServletRequest request,
+                                     @RequestBody @Validated(OnCreate.class) CommentDtoRequest commentDtoRequest) {
+        log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
+        return itemService.createComment(itemId, commentDtoRequest, userId);
     }
 
     @GetMapping("/{id}")
-    ItemDto getItemById(@PathVariable Long id, HttpServletRequest request) {
+    ItemDtoResponseWithDate getItemById(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
+                                        @PathVariable Long id,
+                                        HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return ItemMapper.toItemDto(itemService.getItemById(id));
+        return itemService.getItemById(id, userId);
     }
 
     @GetMapping()
-    List<ItemDto> getAllItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long ownerId, HttpServletRequest request) {
+    List<ItemDtoResponseWithDate> getAllItemsByOwnerId(@RequestHeader(HeaderName.SHARER_USER_ID) Long ownerId,
+                                                       HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        List<Item> allOwnerItems = itemService.getAllItemsByOwnerId(ownerId);
-        return allOwnerItems.stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return itemService.getAllItemsByOwnerId(ownerId);
     }
 
     @PatchMapping("/{id}")
-    ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                       @PathVariable Long id,
-                       @RequestBody ItemDto itemDto,
-                       HttpServletRequest request) {
-        log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDto);
-        User owner = userService.getUserById(ownerId);
-        Item item = ItemMapper.toItem(itemDto, owner);
-        return ItemMapper.toItemDto(itemService.updateItem(id, item));
+    ItemDtoResponse updateItem(@RequestHeader(HeaderName.SHARER_USER_ID) Long ownerId,
+                               @PathVariable Long id,
+                               @RequestBody @Validated(OnUpdate.class) ItemDtoRequest itemDtoRequest,
+                               HttpServletRequest request) {
+        log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemDtoRequest);
+        return itemService.updateItem(id, itemDtoRequest, ownerId);
     }
 
     @GetMapping("/search")
-    List<ItemDto> getItemsByText(@RequestParam("text") String text, HttpServletRequest request) {
+    List<ItemDtoResponse> getAvailableItemsByText(@RequestParam String text, HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return itemService.getItemsByText(text).stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return itemService.getAvailableItemsByText(text);
     }
 }
 

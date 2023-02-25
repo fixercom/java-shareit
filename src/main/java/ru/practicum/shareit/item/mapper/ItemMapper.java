@@ -1,28 +1,31 @@
 package ru.practicum.shareit.item.mapper;
 
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import org.mapstruct.*;
+import ru.practicum.shareit.booking.dto.BookingDtoForItem;
+import ru.practicum.shareit.item.dto.CommentDtoResponse;
+import ru.practicum.shareit.item.dto.ItemDtoRequest;
+import ru.practicum.shareit.item.dto.ItemDtoResponse;
+import ru.practicum.shareit.item.dto.ItemDtoResponseWithDate;
+import ru.practicum.shareit.item.entity.Item;
+import ru.practicum.shareit.user.entity.User;
 
-public class ItemMapper {
-    public static ItemDto toItemDto(Item item) {
-        return ItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .request(item.getRequest())
-                .build();
-    }
+import java.util.List;
 
-    public static Item toItem(ItemDto itemDto, User owner) {
-        return Item.builder()
-                .id(itemDto.getId())
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.getAvailable())
-                .owner(owner)
-                .request(itemDto.getRequest())
-                .build();
-    }
+@Mapper
+public interface ItemMapper {
+    @Mapping(target = "id", source = "itemDtoRequest.id")
+    @Mapping(target = "name", source = "itemDtoRequest.name")
+    Item toItem(ItemDtoRequest itemDtoRequest, User owner);
+
+    @Mapping(target = "id", source = "item.id")
+    ItemDtoResponseWithDate toItemDtoResponseWithDate(Item item, BookingDtoForItem lastBooking,
+                                                      BookingDtoForItem nextBooking, List<CommentDtoResponse> comments);
+
+    ItemDtoResponse toItemDtoResponse(Item item);
+
+    List<ItemDtoResponse> toItemDtoResponseList(List<Item> items);
+
+    @Mapping(target = "owner", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Item updateItemFromDto(ItemDtoRequest itemDtoRequest, @MappingTarget Item item);
 }
