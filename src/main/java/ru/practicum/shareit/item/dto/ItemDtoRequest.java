@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
-import ru.practicum.shareit.request.entity.ItemRequest;
 import ru.practicum.shareit.validation.annotation.NotBlankButMayBeNull;
 import ru.practicum.shareit.validation.groups.OnCreate;
 import ru.practicum.shareit.validation.groups.OnUpdate;
@@ -22,5 +21,5 @@ public class ItemDtoRequest {
     private String description;
     @NotNull(groups = OnCreate.class, message = "available must not be null")
     private Boolean available;
-    private ItemRequest request;
+    private Long requestId;
 }

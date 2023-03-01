@@ -22,46 +22,46 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorMessage handleMethodArgumentNotValidException(MethodArgumentNotValidException exception,
-                                                              HttpServletRequest request) {
+    public ErrorMessage handleMethodArgumentNotValidException(MethodArgumentNotValidException exception, HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), exception.getTarget());
         String fieldName = Objects.requireNonNull(exception.getFieldError()).getField();
         Object rejectedValue = Objects.requireNonNull(exception.getFieldError()).getRejectedValue();
         String message = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
-        log.warn("{}MethodArgumentNotValidException: {}Field {}=\"{}\" is not valid for the reason \"{}\"",
-                YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, fieldName, rejectedValue, message);
+        log.warn("{}MethodArgumentNotValidException: {}Field {}=\"{}\" is not valid for the reason \"{}\"", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, fieldName, rejectedValue, message);
         return new ErrorMessage(400, message);
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorMessage handleMissingRequestHeaderException(MissingRequestHeaderException exception,
-                                                            HttpServletRequest request) {
+    public ErrorMessage handleMissingRequestHeaderException(MissingRequestHeaderException exception, HttpServletRequest request) {
         String message = exception.getMessage();
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        log.warn("{}MissingRequestHeaderException: {}{}",
-                YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        log.warn("{}MissingRequestHeaderException: {}{}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
         return new ErrorMessage(400, message);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorMessage handleMissingServletRequestParameterException(MissingServletRequestParameterException exception,
-                                                                      HttpServletRequest request) {
+    public ErrorMessage handleMissingServletRequestParameterException(MissingServletRequestParameterException exception, HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
         String message = exception.getMessage();
         log.warn("{}MissingServletRequestParameterException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
         return new ErrorMessage(400, message);
     }
 
-    @ExceptionHandler({UserNotFoundException.class,
-            ItemNotFoundException.class,
-            BookingNotFoundException.class})
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessage handleIllegalArgumentException(IllegalArgumentException exception) {
+        String message = exception.getMessage();
+        log.warn("{}IllegalArgumentException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        return new ErrorMessage(400, message);
+    }
+
+    @ExceptionHandler({UserNotFoundException.class, ItemNotFoundException.class, BookingNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorMessage handleNotFoundException(RuntimeException exception) {
         String message = exception.getMessage();
-        log.warn("{}{}: {} {}", YELLOW_COLOR_LOG,
-                exception.getClass().getSimpleName(), ORIGINAL_COLOR_LOG, message);
+        log.warn("{}{}: {} {}", YELLOW_COLOR_LOG, exception.getClass().getSimpleName(), ORIGINAL_COLOR_LOG, message);
         return new ErrorMessage(404, message);
     }
 
@@ -123,8 +123,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorMessage handleJdbcSQLIntegrityConstraintViolationException(
-            SQLIntegrityConstraintViolationException exception) {
+    public ErrorMessage handleJdbcSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException exception) {
         String message = exception.getMessage();
         if (message.contains("PUBLIC.USERS(EMAIL NULLS FIRST)")) {
             String email = message.split("'")[1];

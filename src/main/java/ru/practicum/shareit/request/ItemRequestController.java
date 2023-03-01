@@ -10,6 +10,9 @@ import ru.practicum.shareit.util.HeaderName;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/requests")
@@ -24,5 +27,21 @@ public class ItemRequestController {
                                         HttpServletRequest request) {
         log.debug("{} request {} received: {}", request.getMethod(), request.getRequestURI(), itemRequestDtoIn);
         return itemRequestService.createItemRequest(itemRequestDtoIn, userId);
+    }
+
+    @GetMapping
+    List<ItemRequestDtoOut> getAllOwnItemRequests(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
+                                                       HttpServletRequest request) {
+        log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
+        return itemRequestService.getAllOwnItemRequests(userId);
+    }
+
+    @GetMapping("/all")
+    List<ItemRequestDtoOut> getAllNotOwnItemRequests(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
+                                                     @RequestParam @Min(0) Optional<Integer> from,
+                                                     @RequestParam @Min(1) Optional<Integer> size,
+                                                     HttpServletRequest request) {
+        log.debug("{} request {}?{} received", request.getMethod(), request.getRequestURI(), request.getQueryString());
+        return itemRequestService.getAllNotOwnItemRequests(userId, from.orElse(0), size.orElse(100));
     }
 }
