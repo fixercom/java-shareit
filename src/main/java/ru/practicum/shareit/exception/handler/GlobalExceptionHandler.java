@@ -57,7 +57,10 @@ public class GlobalExceptionHandler {
         return new ErrorMessage(400, message);
     }
 
-    @ExceptionHandler({UserNotFoundException.class, ItemNotFoundException.class, BookingNotFoundException.class})
+    @ExceptionHandler({UserNotFoundException.class,
+            ItemNotFoundException.class,
+            BookingNotFoundException.class,
+            ItemRequestNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorMessage handleNotFoundException(RuntimeException exception) {
         String message = exception.getMessage();

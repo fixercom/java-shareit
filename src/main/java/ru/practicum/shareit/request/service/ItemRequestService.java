@@ -11,4 +11,6 @@ public interface ItemRequestService {
     List<ItemRequestDtoOut> getAllOwnItemRequests(Long userId);
 
     List<ItemRequestDtoOut> getAllNotOwnItemRequests(Long userId, Integer from, Integer size);
+
+    ItemRequestDtoOut getItemRequestById(Long id, Long userId);
 }

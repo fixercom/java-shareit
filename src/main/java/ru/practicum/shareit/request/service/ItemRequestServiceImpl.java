@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exception.ItemRequestNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -65,6 +66,17 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return itemRequestDtoOuts;
     }
 
+    @Override
+    public ItemRequestDtoOut getItemRequestById(Long id, Long userId) {
+        userService.checkUserExists(userId);
+        ItemRequest itemRequest = getItemRequestEntityById(id);
+        List<Item> items = itemRepository.findAllByRequest(itemRequest);
+        List<ItemDtoResponse> itemDtoResponses = itemMapper.toItemDtoResponseList(items);
+        ItemRequestDtoOut dtoOut = itemRequestMapper.toItemRequestDtoOut(itemRequest, itemDtoResponses);
+        log.debug("Item request with id={} was obtained from the database: {}", id, dtoOut);
+        return dtoOut;
+    }
+
     private List<ItemRequestDtoOut> generateItemRequestDtoOutList(List<ItemRequest> requests, List<Item> items) {
         Map<ItemRequest, List<ItemDtoResponse>> itemReqestMap = groupItemsByItemRequestKey(items);
         List<ItemRequestDtoOut> resultList = new ArrayList<>();
@@ -84,5 +96,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             itemRequestsMap.put(itemRequest, itemsForItemRequest);
         }
         return itemRequestsMap;
+    }
+
+    private ItemRequest getItemRequestEntityById(Long id) {
+        return itemRequestRepository.findById(id).orElseThrow(() -> new ItemRequestNotFoundException(id));
     }
 }

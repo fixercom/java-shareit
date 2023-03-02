@@ -31,7 +31,7 @@ public class ItemRequestController {
 
     @GetMapping
     List<ItemRequestDtoOut> getAllOwnItemRequests(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
-                                                       HttpServletRequest request) {
+                                                  HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
         return itemRequestService.getAllOwnItemRequests(userId);
     }
@@ -43,5 +43,13 @@ public class ItemRequestController {
                                                      HttpServletRequest request) {
         log.debug("{} request {}?{} received", request.getMethod(), request.getRequestURI(), request.getQueryString());
         return itemRequestService.getAllNotOwnItemRequests(userId, from.orElse(0), size.orElse(100));
+    }
+
+    @GetMapping("/{id}")
+    ItemRequestDtoOut getItemRequestById(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
+                                         @PathVariable Long id,
+                                         HttpServletRequest request) {
+        log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
+        return itemRequestService.getItemRequestById(id, userId);
     }
 }
