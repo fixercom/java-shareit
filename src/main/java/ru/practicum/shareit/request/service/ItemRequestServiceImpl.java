@@ -58,7 +58,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoOut> getAllNotOwnItemRequests(Long userId, Integer from, Integer size) {
-        Pageable pageable = PageRequest.of(from, size, Sort.by("created").descending());
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("created").descending());
         List<ItemRequest> itemRequests = itemRequestRepository.findAllNotOwnItemRequests(userId, pageable);
         List<Item> items = itemRepository.findAllByRequestIn(itemRequests);
         List<ItemRequestDtoOut> itemRequestDtoOuts = generateItemRequestDtoOutList(itemRequests, items);

@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,22 +57,22 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoResponse> getAllByBookerId(Long userId, State state) {
+    public List<BookingDtoResponse> getAllByBookerId(Long userId, State state, Integer from, Integer size) {
         checkUserExists(userId);
-        Sort sort = Sort.by("start").descending();
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("start").descending());
         List<Booking> bookings;
         if (state == State.ALL) {
-            bookings = bookingRepository.findAllUserBookings(userId, sort);
+            bookings = bookingRepository.findAllUserBookings(userId, pageable);
         } else if (state == State.PAST) {
-            bookings = bookingRepository.findAllPastUserBookings(userId, LocalDateTime.now(), sort);
+            bookings = bookingRepository.findAllPastUserBookings(userId, LocalDateTime.now(), pageable);
         } else if (state == State.CURRENT) {
-            bookings = bookingRepository.findAllCurrentUserBookings(userId, LocalDateTime.now(), sort);
+            bookings = bookingRepository.findAllCurrentUserBookings(userId, LocalDateTime.now(), pageable);
         } else if (state == State.FUTURE) {
-            bookings = bookingRepository.findAllFutureUserBookings(userId, LocalDateTime.now(), sort);
+            bookings = bookingRepository.findAllFutureUserBookings(userId, LocalDateTime.now(), pageable);
         } else if (state == State.WAITING) {
-            bookings = bookingRepository.findAllByBookerIdAndStatus(userId, BookingStatus.WAITING, sort);
+            bookings = bookingRepository.findAllByBookerIdAndStatus(userId, BookingStatus.WAITING, pageable);
         } else if (state == State.REJECTED) {
-            bookings = bookingRepository.findAllByBookerIdAndStatus(userId, BookingStatus.REJECTED, sort);
+            bookings = bookingRepository.findAllByBookerIdAndStatus(userId, BookingStatus.REJECTED, pageable);
         } else {
             throw new UnknownStateException(State.UNSUPPORTED_STATUS);
         }
@@ -79,22 +81,22 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoResponse> getAllByItemOwnerId(Long userId, State state) {
+    public List<BookingDtoResponse> getAllByItemOwnerId(Long userId, State state, Integer from, Integer size) {
         checkUserExists(userId);
-        Sort sort = Sort.by("start").descending();
+        Pageable pageable = PageRequest.of( from / size, size, Sort.by("start").descending());
         List<Booking> bookings;
         if (state == State.ALL) {
-            bookings = bookingRepository.findAllItemOwnerBookings(userId, sort);
+            bookings = bookingRepository.findAllItemOwnerBookings(userId, pageable);
         } else if (state == State.PAST) {
-            bookings = bookingRepository.findAllPastItemOwnerBookings(userId, LocalDateTime.now(), sort);
+            bookings = bookingRepository.findAllPastItemOwnerBookings(userId, LocalDateTime.now(), pageable);
         } else if (state == State.CURRENT) {
-            bookings = bookingRepository.findAllCurrentItemOwnerBookings(userId, LocalDateTime.now(), sort);
+            bookings = bookingRepository.findAllCurrentItemOwnerBookings(userId, LocalDateTime.now(), pageable);
         } else if (state == State.FUTURE) {
-            bookings = bookingRepository.findAllFutureItemOwnerBookings(userId, LocalDateTime.now(), sort);
+            bookings = bookingRepository.findAllFutureItemOwnerBookings(userId, LocalDateTime.now(), pageable);
         } else if (state == State.WAITING) {
-            bookings = bookingRepository.findAllByItemOwnerIdAndStatus(userId, BookingStatus.WAITING, sort);
+            bookings = bookingRepository.findAllByItemOwnerIdAndStatus(userId, BookingStatus.WAITING, pageable);
         } else if (state == State.REJECTED) {
-            bookings = bookingRepository.findAllByItemOwnerIdAndStatus(userId, BookingStatus.REJECTED, sort);
+            bookings = bookingRepository.findAllByItemOwnerIdAndStatus(userId, BookingStatus.REJECTED, pageable);
         } else {
             throw new UnknownStateException(State.UNSUPPORTED_STATUS);
         }
