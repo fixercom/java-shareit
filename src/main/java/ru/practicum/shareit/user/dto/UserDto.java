@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.dto;
 
+import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.validation.annotation.NotBlankButMayBeNull;
 import ru.practicum.shareit.validation.groups.OnCreate;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Null;
 
 @Data
+@Builder
 public class UserDto {
     @Null(groups = OnCreate.class, message = "id must be null")
     private Long id;
