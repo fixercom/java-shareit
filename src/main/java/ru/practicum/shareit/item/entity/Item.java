@@ -16,10 +16,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "items",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uc_items_name_owner", columnNames = {"name", "owner_id"})
-        })
+@Table(name = "items")
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
