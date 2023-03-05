@@ -83,7 +83,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDtoResponse> getAllByItemOwnerId(Long userId, State state, Integer from, Integer size) {
         checkUserExists(userId);
-        Pageable pageable = PageRequest.of( from / size, size, Sort.by("start").descending());
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("start").descending());
         List<Booking> bookings;
         if (state == State.ALL) {
             bookings = bookingRepository.findAllItemOwnerBookings(userId, pageable);
@@ -108,17 +108,17 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingDtoResponse updateBooking(Long userId, Long bookingId, Boolean approved) {
         Booking booking = getBookingByIdWithoutCheckAccess(bookingId);
-        Item item = booking.getItem();
-        checkItemOwner(item, userId);
+        checkItemOwner(booking, userId);
         checkBookingStatus(booking);
         changeBookingStatus(booking, approved);
         log.debug("Booking with id={} was updated", booking);
         return bookingMapper.toBookingDtoResponse(booking);
     }
 
-    private void checkItemOwner(Item item, Long userId) {
-        if (!item.getOwner().getId().equals(userId)) {
-            throw new ItemNotFoundException(item.getId());
+    private void checkItemOwner(Booking booking, Long userId) {
+        Long itemOwnerId = booking.getItem().getOwner().getId();
+        if (!itemOwnerId.equals(userId)) {
+            throw new BookingNotFoundException(booking.getId());
         }
     }
 
