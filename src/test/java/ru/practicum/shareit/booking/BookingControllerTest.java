@@ -14,8 +14,13 @@ import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.entity.State;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.exception.BookingEndDateBeforeStartDateException;
+import ru.practicum.shareit.exception.ItemNotAvailableForBookingException;
+import ru.practicum.shareit.exception.NotPossibleChangeBookingStatusException;
+import ru.practicum.shareit.exception.UnknownStateException;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -49,6 +54,47 @@ class BookingControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is("WAITING")));
+        verify(bookingService, times(1)).createBooking(dtoRequest, 3L);
+    }
+
+    @Test
+    @SneakyThrows
+    void createBooking_whenItemIsNotAvailable_thenReturnIsBadRequest() {
+        Long itemId = 1L;
+        BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
+        when(bookingService.createBooking(any(BookingDtoRequest.class), anyLong()))
+                .thenThrow(new ItemNotAvailableForBookingException(itemId));
+        mockMvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", 3)
+                        .content(mapper.writeValueAsString(dtoRequest))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.statusCode", is(400)))
+                .andExpect(jsonPath("$.error",
+                        is(String.format("Item with id=%s is not available for booking", itemId))));
+        verify(bookingService, times(1)).createBooking(dtoRequest, 3L);
+    }
+
+    @Test
+    @SneakyThrows
+    void createBooking_whenDatesAreIncorrect_thenReturnIsBadRequest() {
+        LocalDateTime startDate = LocalDateTime.now();
+        LocalDateTime endDate = LocalDateTime.now().minusDays(1);
+        BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
+        when(bookingService.createBooking(any(BookingDtoRequest.class), anyLong()))
+                .thenThrow(new BookingEndDateBeforeStartDateException(startDate, endDate));
+        mockMvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", 3)
+                        .content(mapper.writeValueAsString(dtoRequest))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.statusCode", is(400)))
+                .andExpect(jsonPath("$.error", is(String.format("The end date of the booking %s cannot" +
+                        " be earlier than the start date %s", endDate, startDate))));
         verify(bookingService, times(1)).createBooking(dtoRequest, 3L);
     }
 
@@ -125,6 +171,21 @@ class BookingControllerTest {
 
     @Test
     @SneakyThrows
+    void getAllByBookerId_whenUnknownState_thenReturnIsBadRequest() {
+        when(bookingService.getAllByBookerId(anyLong(), any(State.class), anyInt(), anyInt()))
+                .thenThrow(new UnknownStateException(State.UNSUPPORTED_STATUS));
+        mockMvc.perform(get("/bookings?state=UNSUPPORTED_STATUS&from=10&size=5")
+                        .header("X-Sharer-User-Id", 7)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.statusCode", is(400)))
+                .andExpect(jsonPath("$.error", is("Unknown state: UNSUPPORTED_STATUS")));
+        verify(bookingService, times(1))
+                .getAllByBookerId(7L, State.UNSUPPORTED_STATUS, 10, 5);
+    }
+
+    @Test
+    @SneakyThrows
     void getAllByBookerId_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
         mockMvc.perform(get("/bookings"))
                 .andExpect(status().isBadRequest())
@@ -181,6 +242,18 @@ class BookingControllerTest {
 
     @Test
     @SneakyThrows
+    void getAllByItemOwnerId_whenIncorrectSizeParam_thenReturnIsBadRequest() {
+        mockMvc.perform(get("/bookings/owner?size=-10")
+                        .header("X-Sharer-User-Id", 2))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.statusCode", is(400)))
+                .andExpect(jsonPath("$.error", is("getAllByItemOwnerId.size: must be" +
+                        " greater than or equal to 1")));
+        verify(bookingService, never()).getAllByItemOwnerId(anyLong(), any(State.class), anyInt(), anyInt());
+    }
+
+    @Test
+    @SneakyThrows
     void updateBooking_whenSuccessful_thenReturnIsOk() {
         BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
         BookingDtoResponse dtoResponse = BookingDtoResponse.builder().status(BookingStatus.APPROVED).build();
@@ -209,5 +282,37 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.statusCode", is(400)))
                 .andExpect(jsonPath("$.error", is(H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
         verify(bookingService, never()).updateBooking(anyLong(), anyLong(), anyBoolean());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateBooking_whenApproveParamIsAbsent_thenReturnIsBadRequest() {
+        mockMvc.perform(patch("/bookings/14")
+                        .header("X-Sharer-User-Id", 2))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.statusCode", is(400)))
+                .andExpect(jsonPath("$.error", is("Required request parameter 'approved' for" +
+                        " method parameter type Boolean is not present")));
+        verify(bookingService, never()).updateBooking(anyLong(), anyLong(), anyBoolean());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateBooking_whenNotPossibleChangeBookingStatus_thenReturnIsBadRequest() {
+        Long bookingId = 33L;
+        BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
+        when(bookingService.updateBooking(anyLong(), anyLong(), anyBoolean()))
+                .thenThrow(new NotPossibleChangeBookingStatusException(bookingId));
+        mockMvc.perform(patch("/bookings/14?approved=true")
+                        .header("X-Sharer-User-Id", 2)
+                        .content(mapper.writeValueAsString(dtoRequest))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.statusCode", is(400)))
+                .andExpect(jsonPath("$.error", is(
+                        String.format("The status for the booking with id=%s cannot be changed", bookingId))));
+        verify(bookingService).updateBooking(anyLong(), anyLong(), anyBoolean());
     }
 }

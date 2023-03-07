@@ -5,12 +5,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.entity.Booking;
+import ru.practicum.shareit.booking.entity.BookingStatus;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.ItemDtoResponseWithDate;
+import ru.practicum.shareit.item.entity.Comment;
 import ru.practicum.shareit.item.entity.Item;
+import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,23 +28,44 @@ class ItemServiceImplIntegrationTest {
     private final ItemService itemService;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
 
     @Test
     void getAllItemsByOwnerId() {
         User itemOwner = createUser("1");
         User anotherUser = createUser("2");
-        userRepository.saveAll(List.of(itemOwner, anotherUser));
+        User commentAuthor = createUser("3");
+        userRepository.saveAll(List.of(itemOwner, anotherUser, commentAuthor));
         Long itemOwnerId = itemOwner.getId();
         Item item1 = createItem("1", itemOwner);
         Item item2 = createItem("2", anotherUser);
         Item item3 = createItem("3", itemOwner);
         itemRepository.saveAll(List.of(item1, item2, item3));
+        Booking booking = Booking.builder()
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().plusDays(2))
+                .item(item1)
+                .booker(anotherUser)
+                .status(BookingStatus.APPROVED)
+                .build();
+        bookingRepository.save(booking);
+        Comment comment1ForItem3 = Comment.builder().text("Comment1").item(item3).author(commentAuthor).build();
+        Comment comment2ForItem3 = Comment.builder().text("Comment2").item(item3).author(commentAuthor).build();
+        commentRepository.saveAll(List.of(comment1ForItem3, comment2ForItem3));
 
         List<ItemDtoResponseWithDate> allItems = itemService.getAllItemsByOwnerId(itemOwnerId);
 
         assertThat(allItems.size()).isEqualTo(2);
         assertThat(allItems.get(0).getName()).isEqualTo("Item1");
+        assertThat(allItems.get(0).getLastBooking()).isNotNull();
+        assertThat(allItems.get(0).getNextBooking()).isNull();
         assertThat(allItems.get(1).getName()).isEqualTo("Item3");
+        assertThat(allItems.get(1).getComments().size()).isEqualTo(2);
+        assertThat(allItems.get(1).getComments().get(0).getText()).isEqualTo("Comment1");
+        assertThat(allItems.get(1).getComments().get(1).getText()).isEqualTo("Comment2");
     }
 
     User createUser(String userPostfix) {

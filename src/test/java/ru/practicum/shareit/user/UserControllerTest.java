@@ -9,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.exception.EmailIsAlreadyInUseException;
+import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -60,6 +62,24 @@ class UserControllerTest {
 
     @Test
     @SneakyThrows
+    void getUserById_whenUserIsAbsent_thenReturnIsNotFound() {
+        Long userId = 5L;
+        UserDto userDto = UserDto.builder().name("Name2").email("zz@yp.ru").build();
+        when(userService.getUserById(userId)).thenThrow(new UserNotFoundException(userId));
+        mockMvc.perform(get("/users/5")
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.statusCode", is(404)))
+                .andExpect(jsonPath("$.error",
+                        is(String.format("There is no user with id=%s in the database", userId))));
+        verify(userService, times(1)).getUserById(userId);
+    }
+
+    @Test
+    @SneakyThrows
     void getAllUsers() {
         List<UserDto> allUsers = List.of(
                 UserDto.builder().build(),
@@ -75,7 +95,7 @@ class UserControllerTest {
 
     @Test
     @SneakyThrows
-    void updateUser() {
+    void updateUserTest_whenSuccessful_thenReturnIsOk() {
         UserDto userDto = UserDto.builder().name("Name3").email("qwer@yp.ru").build();
         when(userService.updateUser(anyLong(), any(UserDto.class))).thenReturn(userDto);
         mockMvc.perform(patch("/users/77")
@@ -91,9 +111,27 @@ class UserControllerTest {
 
     @Test
     @SneakyThrows
+    void updateUserTest_whenEmailIsAlreadyInUse_thenReturnIsConflict() {
+        String email = "qwer@yp.ru";
+        UserDto userDto = UserDto.builder().name("Name3").email(email).build();
+        when(userService.updateUser(anyLong(), any(UserDto.class)))
+                .thenThrow(new EmailIsAlreadyInUseException(email));
+        mockMvc.perform(patch("/users/77")
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.statusCode", is(409)))
+                .andExpect(jsonPath("$.error", is(String.format("Email address %s is already used", email))));
+        verify(userService, times(1)).updateUser(77L, userDto);
+    }
+
+    @Test
+    @SneakyThrows
     void deleteUser() {
         mockMvc.perform(delete("/users/8"))
                 .andExpect(status().isOk());
-        verify(userService,times(1)).deleteUser(8L);
+        verify(userService, times(1)).deleteUser(8L);
     }
 }

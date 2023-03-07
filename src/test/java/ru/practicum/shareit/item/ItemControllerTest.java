@@ -9,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.exception.NotOwnerItemException;
+import ru.practicum.shareit.exception.UserDidNotBookingItemException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -69,6 +71,22 @@ class ItemControllerTest {
 
     @Test
     @SneakyThrows
+    void createItem_whenItemNameIsNull_thenReturnIsBadRequest() {
+        ItemDtoRequest dtoRequest = createDtoRequest(null, "Small");
+        mockMvc.perform(post("/items")
+                        .header("X-Sharer-User-Id", 3)
+                        .content(mapper.writeValueAsString(dtoRequest))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.statusCode", is(400)))
+                .andExpect(jsonPath("$.error", is("name must not be empty or null")));
+        verify(itemService, never()).createItem(any(ItemDtoRequest.class), anyLong());
+    }
+
+    @Test
+    @SneakyThrows
     void createComment_whenSuccessful_thenReturnIsOk() {
         CommentDtoRequest dtoRequest = CommentDtoRequest.builder().text("Comment text").build();
         CommentDtoResponse dtoResponse = CommentDtoResponse.builder().text("Comment text").build();
@@ -82,6 +100,27 @@ class ItemControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text", is("Comment text")));
         verify(itemService, times(1)).createComment(935L, dtoRequest, 77L);
+    }
+
+    @Test
+    @SneakyThrows
+    void createComment_whenUserDidNotBookingItem_thenReturnIsBadRequest() {
+        Long userId = 77L;
+        Long itemId = 246L;
+        CommentDtoRequest dtoRequest = CommentDtoRequest.builder().text("Comment text").build();
+        when(itemService.createComment(anyLong(), any(CommentDtoRequest.class), anyLong()))
+                .thenThrow(new UserDidNotBookingItemException(userId, itemId));
+        mockMvc.perform(post("/items/246/comment")
+                        .header("X-Sharer-User-Id", 77)
+                        .content(mapper.writeValueAsString(dtoRequest))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.statusCode", is(400)))
+                .andExpect(jsonPath("$.error", is(String.format("The user with id=%s did not book" +
+                        " the item with id=%s", userId, itemId))));
+        verify(itemService, times(1)).createComment(itemId, dtoRequest, userId);
     }
 
     @Test
@@ -166,6 +205,27 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.name", is("Hammer")))
                 .andExpect(jsonPath("$.description", is("Wooden")));
         verify(itemService, times(1)).updateItem(8L, dtoRequest, 2L);
+    }
+
+    @Test
+    @SneakyThrows
+    void updateItem_whenNotOwnerItem_thenReturnIsForbidden() {
+        Long itemId = 15L;
+        Long userId = 66L;
+        ItemDtoRequest dtoRequest = createDtoRequest("Hammer", "Wooden");
+        when(itemService.updateItem(anyLong(), any(ItemDtoRequest.class), anyLong()))
+                .thenThrow(new NotOwnerItemException(itemId, userId));
+        mockMvc.perform(patch("/items/15")
+                        .header("X-Sharer-User-Id", 66)
+                        .content(mapper.writeValueAsString(dtoRequest))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.statusCode", is(403)))
+                .andExpect(jsonPath("$.error", is(String.format("User with id=%s is not the owner of" +
+                        " the item with id=%s", userId, itemId))));
+        verify(itemService, times(1)).updateItem(itemId, dtoRequest, userId);
     }
 
     @Test

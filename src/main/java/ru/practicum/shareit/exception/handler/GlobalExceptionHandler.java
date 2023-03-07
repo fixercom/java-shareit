@@ -137,13 +137,7 @@ public class GlobalExceptionHandler {
     public ErrorMessage handleJdbcSQLIntegrityConstraintViolationException(
             SQLIntegrityConstraintViolationException exception) {
         String message = exception.getMessage();
-        if (message.contains("PUBLIC.USERS(EMAIL NULLS FIRST)")) {
-            String email = message.split("'")[1];
-            message = String.format("Email address %s is already used", email);
-            log.warn("{}SQLIntegrityConstraintViolationException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
-        } else {
-            log.warn("{}SQLIntegrityConstraintViolationException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
-        }
+        log.warn("{}SQLIntegrityConstraintViolationException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
         return new ErrorMessage(409, message);
     }
 }
