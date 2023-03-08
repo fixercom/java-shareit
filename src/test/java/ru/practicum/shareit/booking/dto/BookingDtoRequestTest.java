@@ -1,15 +1,15 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
+import ru.practicum.shareit.util.Constants;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,11 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class BookingDtoRequestTest {
     private final JacksonTester<BookingDtoRequest> jacksonTester;
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     @Test
-    @SneakyThrows
-    void serializeInCorrectFormat() {
+    void serializeInCorrectFormat() throws IOException {
         BookingDtoRequest dto = BookingDtoRequest.builder()
                 .itemId(1L)
                 .start(LocalDateTime.now())
@@ -33,7 +31,9 @@ class BookingDtoRequestTest {
         LocalDateTime endTime = dto.getEnd();
 
         assertThat(jsonContent).extractingJsonPathValue("$.itemId").isEqualTo(1);
-        assertThat(jsonContent).extractingJsonPathValue("$.start").isEqualTo(startTime.format(FORMATTER));
-        assertThat(jsonContent).extractingJsonPathValue("$.end").isEqualTo(endTime.format(FORMATTER));
+        assertThat(jsonContent).extractingJsonPathValue("$.start")
+                .isEqualTo(startTime.format(Constants.FORMATTER));
+        assertThat(jsonContent).extractingJsonPathValue("$.end")
+                .isEqualTo(endTime.format(Constants.FORMATTER));
     }
 }

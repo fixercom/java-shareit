@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -10,9 +9,10 @@ import org.springframework.boot.test.json.JsonContent;
 import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.util.Constants;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,11 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class BookingDtoResponseTest {
     private final JacksonTester<BookingDtoResponse> jacksonTester;
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     @Test
-    @SneakyThrows
-    void serializeInCorrectFormat() {
+    void serializeInCorrectFormat() throws IOException {
         UserDto userDto = UserDto.builder()
                 .id(7L)
                 .name("Gorge")
@@ -51,8 +49,10 @@ class BookingDtoResponseTest {
         LocalDateTime endTime = bookingDtoResponse.getEnd();
 
         assertThat(jsonContent).extractingJsonPathValue("$.id").isEqualTo(3);
-        assertThat(jsonContent).extractingJsonPathValue("$.start").isEqualTo(startTime.format(FORMATTER));
-        assertThat(jsonContent).extractingJsonPathValue("$.end").isEqualTo(endTime.format(FORMATTER));
+        assertThat(jsonContent).extractingJsonPathValue("$.start")
+                .isEqualTo(startTime.format(Constants.FORMATTER));
+        assertThat(jsonContent).extractingJsonPathValue("$.end")
+                .isEqualTo(endTime.format(Constants.FORMATTER));
         assertThat(jsonContent).extractingJsonPathValue("$.status").isEqualTo("APPROVED");
         assertThat(jsonContent).extractingJsonPathValue("$.booker.id").isEqualTo(7);
         assertThat(jsonContent).extractingJsonPathValue("$.booker.name").isEqualTo("Gorge");
