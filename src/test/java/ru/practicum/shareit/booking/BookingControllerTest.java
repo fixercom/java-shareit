@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -41,8 +40,7 @@ class BookingControllerTest {
             " for method parameter type Long is not present";
 
     @Test
-    @SneakyThrows
-    void createBooking_whenSuccessful_thenReturnIsOk() {
+    void createBooking_whenSuccessful_thenReturnIsOk() throws Exception {
         BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
         BookingDtoResponse dtoResponse = BookingDtoResponse.builder().status(BookingStatus.WAITING).build();
         when(bookingService.createBooking(any(BookingDtoRequest.class), anyLong())).thenReturn(dtoResponse);
@@ -58,8 +56,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void createBooking_whenItemIsNotAvailable_thenReturnIsBadRequest() {
+    void createBooking_whenItemIsNotAvailable_thenReturnIsBadRequest() throws Exception {
         Long itemId = 1L;
         BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
         when(bookingService.createBooking(any(BookingDtoRequest.class), anyLong()))
@@ -78,8 +75,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void createBooking_whenDatesAreIncorrect_thenReturnIsBadRequest() {
+    void createBooking_whenDatesAreIncorrect_thenReturnIsBadRequest() throws Exception {
         LocalDateTime startDate = LocalDateTime.now();
         LocalDateTime endDate = LocalDateTime.now().minusDays(1);
         BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
@@ -99,8 +95,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void createBooking_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void createBooking_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
         mockMvc.perform(post("/bookings")
                         .content(mapper.writeValueAsString(dtoRequest))
@@ -114,8 +109,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getBookingById_whenSuccessful_thenReturnIsOk() {
+    void getBookingById_whenSuccessful_thenReturnIsOk() throws Exception {
         BookingDtoResponse dtoResponse = BookingDtoResponse.builder().id(5L).status(BookingStatus.WAITING).build();
         when(bookingService.getBookingById(anyLong(), anyLong())).thenReturn(dtoResponse);
         mockMvc.perform(get("/bookings/5")
@@ -128,8 +122,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getBookingById_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void getBookingById_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         mockMvc.perform(get("/bookings/5"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
@@ -138,8 +131,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllByBookerId_whenDefaultFromAndSizeParams_thenReturnIsOk() {
+    void getAllByBookerId_whenDefaultFromAndSizeParams_thenReturnIsOk() throws Exception {
         List<BookingDtoResponse> allBookings = List.of(
                 BookingDtoResponse.builder().build(),
                 BookingDtoResponse.builder().build()
@@ -154,8 +146,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllByBookerId_whenFromAndSizeParamsIsPresent_thenReturnIsOk() {
+    void getAllByBookerId_whenFromAndSizeParamsIsPresent_thenReturnIsOk() throws Exception {
         List<BookingDtoResponse> allBookings = List.of(
                 BookingDtoResponse.builder().build(),
                 BookingDtoResponse.builder().build()
@@ -170,8 +161,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllByBookerId_whenUnknownState_thenReturnIsBadRequest() {
+    void getAllByBookerId_whenUnknownState_thenReturnIsBadRequest() throws Exception {
         when(bookingService.getAllByBookerId(anyLong(), any(State.class), anyInt(), anyInt()))
                 .thenThrow(new UnknownStateException(State.UNSUPPORTED_STATUS));
         mockMvc.perform(get("/bookings?state=UNSUPPORTED_STATUS&from=10&size=5")
@@ -185,8 +175,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllByBookerId_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void getAllByBookerId_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         mockMvc.perform(get("/bookings"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
@@ -195,8 +184,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllByItemOwnerId_whenDefaultFromAndSizeParams_thenReturnIsOk() {
+    void getAllByItemOwnerId_whenDefaultFromAndSizeParams_thenReturnIsOk() throws Exception {
         List<BookingDtoResponse> allBookings = List.of(
                 BookingDtoResponse.builder().build(),
                 BookingDtoResponse.builder().build()
@@ -213,8 +201,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllByItemOwnerId_whenFromAndSizeParamsIsPresent_thenReturnIsOk() {
+    void getAllByItemOwnerId_whenFromAndSizeParamsIsPresent_thenReturnIsOk() throws Exception {
         List<BookingDtoResponse> allBookings = List.of(
                 BookingDtoResponse.builder().build(),
                 BookingDtoResponse.builder().build()
@@ -231,8 +218,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllByItemOwnerId_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void getAllByItemOwnerId_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         mockMvc.perform(get("/bookings/owner"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
@@ -241,8 +227,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllByItemOwnerId_whenIncorrectSizeParam_thenReturnIsBadRequest() {
+    void getAllByItemOwnerId_whenIncorrectSizeParam_thenReturnIsBadRequest() throws Exception {
         mockMvc.perform(get("/bookings/owner?size=-10")
                         .header("X-Sharer-User-Id", 2))
                 .andExpect(status().isBadRequest())
@@ -253,8 +238,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void updateBooking_whenSuccessful_thenReturnIsOk() {
+    void updateBooking_whenSuccessful_thenReturnIsOk() throws Exception {
         BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
         BookingDtoResponse dtoResponse = BookingDtoResponse.builder().status(BookingStatus.APPROVED).build();
         when(bookingService.updateBooking(anyLong(), anyLong(), anyBoolean())).thenReturn(dtoResponse);
@@ -270,8 +254,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void updateBooking_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void updateBooking_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
         mockMvc.perform(patch("/bookings/14?approved=true")
                         .content(mapper.writeValueAsString(dtoRequest))
@@ -285,8 +268,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void updateBooking_whenApproveParamIsAbsent_thenReturnIsBadRequest() {
+    void updateBooking_whenApproveParamIsAbsent_thenReturnIsBadRequest() throws Exception {
         mockMvc.perform(patch("/bookings/14")
                         .header("X-Sharer-User-Id", 2))
                 .andExpect(status().isBadRequest())
@@ -297,8 +279,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void updateBooking_whenNotPossibleChangeBookingStatus_thenReturnIsBadRequest() {
+    void updateBooking_whenNotPossibleChangeBookingStatus_thenReturnIsBadRequest() throws Exception {
         Long bookingId = 33L;
         BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
         when(bookingService.updateBooking(anyLong(), anyLong(), anyBoolean()))

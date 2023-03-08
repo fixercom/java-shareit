@@ -2,7 +2,6 @@ package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -36,8 +35,7 @@ class ItemControllerTest {
             " for method parameter type Long is not present";
 
     @Test
-    @SneakyThrows
-    void createItem_whenSuccessful_thenReturnIsOk() {
+    void createItem_whenSuccessful_thenReturnIsOk() throws Exception {
         ItemDtoRequest dtoRequest = createDtoRequest("Name", "Description");
         ItemDtoResponse dtoResponse = createDtoResponse(7L, "Name", "Description");
         when(itemService.createItem(any(ItemDtoRequest.class), anyLong())).thenReturn(dtoResponse);
@@ -55,8 +53,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void createItem_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void createItem_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         ItemDtoRequest dtoRequest = createDtoRequest("Item", "Small");
         mockMvc.perform(post("/items")
                         .content(mapper.writeValueAsString(dtoRequest))
@@ -70,8 +67,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void createItem_whenItemNameIsNull_thenReturnIsBadRequest() {
+    void createItem_whenItemNameIsNull_thenReturnIsBadRequest() throws Exception {
         ItemDtoRequest dtoRequest = createDtoRequest(null, "Small");
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", 3)
@@ -86,8 +82,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void createComment_whenSuccessful_thenReturnIsOk() {
+    void createComment_whenSuccessful_thenReturnIsOk() throws Exception {
         CommentDtoRequest dtoRequest = CommentDtoRequest.builder().text("Comment text").build();
         CommentDtoResponse dtoResponse = CommentDtoResponse.builder().text("Comment text").build();
         when(itemService.createComment(anyLong(), any(CommentDtoRequest.class), anyLong())).thenReturn(dtoResponse);
@@ -103,8 +98,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void createComment_whenUserDidNotBookingItem_thenReturnIsBadRequest() {
+    void createComment_whenUserDidNotBookingItem_thenReturnIsBadRequest() throws Exception {
         Long userId = 77L;
         Long itemId = 246L;
         CommentDtoRequest dtoRequest = CommentDtoRequest.builder().text("Comment text").build();
@@ -124,8 +118,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void createComment_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void createComment_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         CommentDtoRequest dtoRequest = CommentDtoRequest.builder().text("Comment text").build();
         mockMvc.perform(post("/items/935/comment")
                         .content(mapper.writeValueAsString(dtoRequest))
@@ -139,8 +132,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getItemById_whenSuccessful_thenReturnIsOk() {
+    void getItemById_whenSuccessful_thenReturnIsOk() throws Exception {
         ItemDtoResponseWithDate dtoResponse = ItemDtoResponseWithDate.builder().description("etc").build();
         when(itemService.getItemById(anyLong(), anyLong())).thenReturn(dtoResponse);
         mockMvc.perform(get("/items/13")
@@ -152,8 +144,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getItemById_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void getItemById_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         mockMvc.perform(get("/items/13")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -163,8 +154,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllItemsByOwnerId_whenSuccessful_thenReturnIsOk() {
+    void getAllItemsByOwnerId_whenSuccessful_thenReturnIsOk() throws Exception {
         List<ItemDtoResponseWithDate> allItems = List.of(
                 ItemDtoResponseWithDate.builder().build(),
                 ItemDtoResponseWithDate.builder().build()
@@ -179,8 +169,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllItemsByOwnerId_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void getAllItemsByOwnerId_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         mockMvc.perform(get("/items/"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
@@ -189,8 +178,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void updateItem_whenSuccessful_thenReturnIsOk() {
+    void updateItem_whenSuccessful_thenReturnIsOk() throws Exception {
         ItemDtoRequest dtoRequest = createDtoRequest("Hammer", "Wooden");
         ItemDtoResponse dtoResponse = createDtoResponse(9L, "Hammer", "Wooden");
         when(itemService.updateItem(anyLong(), any(ItemDtoRequest.class), anyLong())).thenReturn(dtoResponse);
@@ -208,8 +196,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void updateItem_whenNotOwnerItem_thenReturnIsForbidden() {
+    void updateItem_whenNotOwnerItem_thenReturnIsForbidden() throws Exception {
         Long itemId = 15L;
         Long userId = 66L;
         ItemDtoRequest dtoRequest = createDtoRequest("Hammer", "Wooden");
@@ -229,8 +216,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void updateItem_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void updateItem_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         ItemDtoRequest dtoRequest = createDtoRequest("Hammer", "Wooden");
         mockMvc.perform(patch("/items/8")
                         .content(mapper.writeValueAsString(dtoRequest))
@@ -244,8 +230,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAvailableItemsByText_whenSuccessful_thenReturnIsOk() {
+    void getAvailableItemsByText_whenSuccessful_thenReturnIsOk() throws Exception {
         List<ItemDtoResponse> availableItems = List.of(
                 ItemDtoResponse.builder().build(),
                 ItemDtoResponse.builder().build()

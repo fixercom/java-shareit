@@ -2,7 +2,6 @@ package ru.practicum.shareit.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -32,8 +31,7 @@ class UserControllerTest {
     private final MockMvc mockMvc;
 
     @Test
-    @SneakyThrows
-    void createUser_whenSuccessful_thenReturnIsOk() {
+    void createUser_whenSuccessful_thenReturnIsOk() throws Exception {
         UserDto userDto = UserDto.builder().name("Name").email("ma@yp.ru").build();
         when(userService.createUser(any(UserDto.class))).thenReturn(userDto);
         mockMvc.perform(post("/users")
@@ -48,8 +46,7 @@ class UserControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getUserById_whenSuccessful_thenReturnIsOk() {
+    void getUserById_whenSuccessful_thenReturnIsOk() throws Exception {
         UserDto userDto = UserDto.builder().name("Name2").email("zz@yp.ru").build();
         when(userService.getUserById(anyLong())).thenReturn(userDto);
         mockMvc.perform(get("/users/4")
@@ -61,8 +58,7 @@ class UserControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getUserById_whenUserIsAbsent_thenReturnIsNotFound() {
+    void getUserById_whenUserIsAbsent_thenReturnIsNotFound() throws Exception {
         Long userId = 5L;
         UserDto userDto = UserDto.builder().name("Name2").email("zz@yp.ru").build();
         when(userService.getUserById(userId)).thenThrow(new UserNotFoundException(userId));
@@ -79,8 +75,7 @@ class UserControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllUsers() {
+    void getAllUsersTest() throws Exception {
         List<UserDto> allUsers = List.of(
                 UserDto.builder().build(),
                 UserDto.builder().build()
@@ -94,8 +89,7 @@ class UserControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void updateUserTest_whenSuccessful_thenReturnIsOk() {
+    void updateUserTest_whenSuccessful_thenReturnIsOk() throws Exception {
         UserDto userDto = UserDto.builder().name("Name3").email("qwer@yp.ru").build();
         when(userService.updateUser(anyLong(), any(UserDto.class))).thenReturn(userDto);
         mockMvc.perform(patch("/users/77")
@@ -110,8 +104,7 @@ class UserControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void updateUserTest_whenEmailIsAlreadyInUse_thenReturnIsConflict() {
+    void updateUserTest_whenEmailIsAlreadyInUse_thenReturnIsConflict() throws Exception {
         String email = "qwer@yp.ru";
         UserDto userDto = UserDto.builder().name("Name3").email(email).build();
         when(userService.updateUser(anyLong(), any(UserDto.class)))
@@ -128,8 +121,7 @@ class UserControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void deleteUser() {
+    void deleteUser() throws Exception {
         mockMvc.perform(delete("/users/8"))
                 .andExpect(status().isOk());
         verify(userService, times(1)).deleteUser(8L);

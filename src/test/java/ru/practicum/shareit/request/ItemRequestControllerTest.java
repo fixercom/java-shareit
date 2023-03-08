@@ -2,7 +2,6 @@ package ru.practicum.shareit.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -36,8 +35,7 @@ class ItemRequestControllerTest {
             " for method parameter type Long is not present";
 
     @Test
-    @SneakyThrows
-    void createItemRequest_whenSuccessful_thenReturnIsOk() {
+    void createItemRequest_whenSuccessful_thenReturnIsOk() throws Exception {
         ItemRequestDtoIn dtoIn = createDtoIn("Test description");
         ItemRequestDtoOut dtoOut = createDtoOut(1L, "Test description");
         when(itemRequestService.createItemRequest(any(ItemRequestDtoIn.class), anyLong())).thenReturn(dtoOut);
@@ -54,8 +52,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void createItemRequest_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void createItemRequest_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         ItemRequestDtoIn dtoIn = createDtoIn("Description");
         mockMvc.perform(post("/requests")
                         .content(mapper.writeValueAsString(dtoIn))
@@ -69,8 +66,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllOwnItemRequests_whenSuccessful_thenReturnIsOk() {
+    void getAllOwnItemRequests_whenSuccessful_thenReturnIsOk() throws Exception {
         List<ItemRequestDtoOut> allOwnerItemRequests = List.of(
                 createDtoOut(1L, "Request 1"),
                 createDtoOut(2L, "Request 2")
@@ -87,8 +83,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllOwnItemRequests_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void getAllOwnItemRequests_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         mockMvc.perform(get("/requests"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
@@ -97,8 +92,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllNotOwnItemRequests_whenDefaultFromAndSizeParams_thenReturnIsOk() {
+    void getAllNotOwnItemRequests_whenDefaultFromAndSizeParams_thenReturnIsOk() throws Exception {
         List<ItemRequestDtoOut> allNotOwnItemRequests = List.of(
                 createDtoOut(3L, "Request 3"),
                 createDtoOut(4L, "Request 4")
@@ -116,8 +110,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllNotOwnItemRequests_whenFromAndSizeParamsIsPresent_thenReturnIsOk() {
+    void getAllNotOwnItemRequests_whenFromAndSizeParamsIsPresent_thenReturnIsOk() throws Exception {
         List<ItemRequestDtoOut> allNotOwnItemRequests = List.of(
                 createDtoOut(5L, "Request 3"),
                 createDtoOut(6L, "Request 4")
@@ -135,8 +128,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getAllNotOwnItemRequests_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void getAllNotOwnItemRequests_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         mockMvc.perform(get("/requests/all"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
@@ -145,22 +137,20 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void getItemRequestById_whenSuccessful_thenReturnIsOk() {
+    void getItemRequestById_whenSuccessful_thenReturnIsOk() throws Exception {
         ItemRequestDtoOut dtoOut = createDtoOut(4L, "Description");
         when(itemRequestService.getItemRequestById(anyLong(), anyLong())).thenReturn(dtoOut);
         mockMvc.perform(get("/requests/4")
                         .header("X-Sharer-User-Id", 9)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id",is(4)))
-                .andExpect(jsonPath("$.description",is("Description")));
-        verify(itemRequestService,times(1)).getItemRequestById(4L,9L);
+                .andExpect(jsonPath("$.id", is(4)))
+                .andExpect(jsonPath("$.description", is("Description")));
+        verify(itemRequestService, times(1)).getItemRequestById(4L, 9L);
     }
 
     @Test
-    @SneakyThrows
-    void getItemRequestById_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() {
+    void getItemRequestById_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         mockMvc.perform(get("/requests/5"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
