@@ -25,6 +25,6 @@ public class ItemRequest {
     @ManyToOne(optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User requester;
-    @Column(nullable = false)
+    @Column(name = "date_created", nullable = false)
     private LocalDateTime created;
 }

@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.entity.Booking;
@@ -12,32 +12,32 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking b where b.booker.id = ?1")
-    List<Booking> findAllUserBookings(Long userId, Sort sort);
+    List<Booking> findAllUserBookings(Long userId, Pageable pageable);
 
     @Query("select b from Booking b where b.booker.id = ?1 and b.end < ?2")
-    List<Booking> findAllPastUserBookings(Long userId, LocalDateTime currentTime, Sort sort);
+    List<Booking> findAllPastUserBookings(Long userId, LocalDateTime currentTime, Pageable pageable);
 
     @Query("select b from Booking b where b.booker.id = ?1 and b.start < ?2 AND b.end > ?2")
-    List<Booking> findAllCurrentUserBookings(Long userId, LocalDateTime currentTime, Sort sort);
+    List<Booking> findAllCurrentUserBookings(Long userId, LocalDateTime currentTime, Pageable pageable);
 
     @Query("select b from Booking b where b.booker.id = ?1 and b.start > ?2")
-    List<Booking> findAllFutureUserBookings(Long userId, LocalDateTime currentTime, Sort sort);
+    List<Booking> findAllFutureUserBookings(Long userId, LocalDateTime currentTime, Pageable pageable);
 
     @Query("select b from Booking b where b.item.owner.id = ?1")
-    List<Booking> findAllItemOwnerBookings(Long userId, Sort sort);
+    List<Booking> findAllItemOwnerBookings(Long userId, Pageable pageable);
 
     @Query("select b from Booking b where b.item.owner.id = ?1 and b.end < ?2")
-    List<Booking> findAllPastItemOwnerBookings(Long userId, LocalDateTime currentTime, Sort sort);
+    List<Booking> findAllPastItemOwnerBookings(Long userId, LocalDateTime currentTime, Pageable pageable);
 
     @Query("SELECT b FROM Booking b WHERE  b.item.owner.id = ?1 AND b.start < ?2 AND b.end > ?2")
-    List<Booking> findAllCurrentItemOwnerBookings(Long userId, LocalDateTime currentTime, Sort sort);
+    List<Booking> findAllCurrentItemOwnerBookings(Long userId, LocalDateTime currentTime, Pageable pageable);
 
     @Query("select b from Booking b where b.item.owner.id = ?1 and b.start > ?2")
-    List<Booking> findAllFutureItemOwnerBookings(Long userId, LocalDateTime currentTime, Sort sort);
+    List<Booking> findAllFutureItemOwnerBookings(Long userId, LocalDateTime currentTime, Pageable pageable);
 
-    List<Booking> findAllByBookerIdAndStatus(Long bookerId, BookingStatus status, Sort sort);
+    List<Booking> findAllByBookerIdAndStatus(Long bookerId, BookingStatus status, Pageable pageable);
 
-    List<Booking> findAllByItemOwnerIdAndStatus(Long itemOwnerId, BookingStatus bookingStatus, Sort sort);
+    List<Booking> findAllByItemOwnerIdAndStatus(Long itemOwnerId, BookingStatus bookingStatus, Pageable pageable);
 
     @Query("select b from Booking  b where b.item.id = ?1 and b.status = 'APPROVED' order by b.start")
     List<Booking> findAllSortedByStartApprovedBookingsByItemId(Long itemId);

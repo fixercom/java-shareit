@@ -8,10 +8,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoForItem;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.NotOwnerItemException;
-import ru.practicum.shareit.exception.UserDidNotBookingItemException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.entity.Comment;
 import ru.practicum.shareit.item.entity.Item;
@@ -19,6 +16,8 @@ import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.entity.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -37,12 +36,14 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     @Transactional
     public ItemDtoResponse createItem(ItemDtoRequest itemDtoRequest, Long ownerId) {
         User owner = getUserById(ownerId);
-        Item item = itemMapper.toItem(itemDtoRequest, owner);
+        ItemRequest itemRequest = getItemRequestById(itemDtoRequest.getRequestId());
+        Item item = itemMapper.toItem(itemDtoRequest, owner, itemRequest);
         Item savedItem = itemRepository.save(item);
         log.debug("Item saved in the database with id={}: {}", savedItem.getId(), item);
         return itemMapper.toItemDtoResponse(savedItem);
@@ -191,5 +192,10 @@ public class ItemServiceImpl implements ItemService {
 
     private Booking calculateNextBookingFromSortedList(List<Booking> bookings) {
         return bookings.stream().skip(1).findFirst().orElse(null);
+    }
+
+    private ItemRequest getItemRequestById(Long id) {
+        return (id == null) ? null : itemRequestRepository.findById(id)
+                .orElseThrow(() -> new ItemRequestNotFoundException(id));
     }
 }

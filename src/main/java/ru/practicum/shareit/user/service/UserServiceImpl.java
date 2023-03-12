@@ -37,6 +37,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserEntityById(Long userId) {
+        return getUserByIdWithoutCheckAccess(userId);
+    }
+
+    @Override
     public List<UserDto> getAllUsers() {
         List<User> allUsers = userRepository.findAll();
         log.debug("All users were obtained from the database: {}", allUsers);
@@ -65,6 +70,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
 
+    @Override
     public void checkUserExists(Long id) {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException(id);

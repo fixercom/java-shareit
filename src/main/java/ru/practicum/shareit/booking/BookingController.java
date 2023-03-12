@@ -12,12 +12,14 @@ import ru.practicum.shareit.util.HeaderName;
 import ru.practicum.shareit.validation.groups.OnCreate;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class BookingController {
     private final BookingService bookingService;
 
@@ -40,17 +42,21 @@ public class BookingController {
     @GetMapping()
     public List<BookingDtoResponse> getAllByBookerId(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
                                                      @RequestParam(defaultValue = "ALL") State state,
+                                                     @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                     @RequestParam(defaultValue = "100") @Min(1) Integer size,
                                                      HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return bookingService.getAllByBookerId(userId, state);
+        return bookingService.getAllByBookerId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDtoResponse> getAllByItemOwnerId(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
                                                         @RequestParam(defaultValue = "ALL") State state,
+                                                        @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                        @RequestParam(defaultValue = "100") @Min(1) Integer size,
                                                         HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        return bookingService.getAllByItemOwnerId(userId, state);
+        return bookingService.getAllByItemOwnerId(userId, state, from, size);
     }
 
     @PatchMapping("/{bookingId}")

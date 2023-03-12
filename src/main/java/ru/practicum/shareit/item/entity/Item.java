@@ -7,7 +7,6 @@ import ru.practicum.shareit.request.entity.ItemRequest;
 import ru.practicum.shareit.user.entity.User;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -16,10 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "items",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uc_items_name_owner", columnNames = {"name", "owner_id"})
-        })
+@Table(name = "items")
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,17 +32,4 @@ public class Item {
     @OneToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ItemRequest request;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Item item = (Item) o;
-        return id.equals(item.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }
