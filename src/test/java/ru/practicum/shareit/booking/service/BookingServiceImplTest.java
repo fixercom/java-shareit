@@ -102,7 +102,7 @@ class BookingServiceImplTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
 
         assertThatThrownBy(() -> bookingService.createBooking(dtoRequest, 2L))
-                .isInstanceOf(BookingEndDateBeforeStartDateException.class)
+                .isInstanceOf(IncorrectBookingDatesException.class)
                 .hasMessage("The end date of the booking %s cannot be earlier than" +
                         " the start date %s", dtoRequest.getEnd(), dtoRequest.getStart());
     }

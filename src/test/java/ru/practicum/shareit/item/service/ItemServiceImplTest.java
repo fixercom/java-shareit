@@ -302,7 +302,8 @@ class ItemServiceImplTest {
                 anyLong(), anyLong(), any(LocalDateTime.class));
         verify(itemRepository).findById(anyLong());
         verify(userRepository).findById(anyLong());
-        verify(commentMapper).toComment(any(CommentDtoRequest.class), any(Item.class), any(User.class));
+        verify(commentMapper).toComment(any(CommentDtoRequest.class), any(Item.class),
+                any(User.class),any(LocalDateTime.class));
         verify(commentRepository).save(any(Comment.class));
         verify(commentMapper).toCommentDtoResponse(any(Comment.class));
     }

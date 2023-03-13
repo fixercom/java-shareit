@@ -6,6 +6,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import ru.practicum.shareit.user.entity.User;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -27,4 +28,6 @@ public class Comment {
     @ManyToOne(optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User author;
+    @Column(name = "date_created", nullable = false)
+    private LocalDateTime created;
 }

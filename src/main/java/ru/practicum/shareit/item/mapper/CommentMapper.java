@@ -8,12 +8,13 @@ import ru.practicum.shareit.item.entity.Comment;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.user.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
 public interface CommentMapper {
     @Mapping(target = "id", ignore = true)
-    Comment toComment(CommentDtoRequest commentDtoRequest, Item item, User author);
+    Comment toComment(CommentDtoRequest commentDtoRequest, Item item, User author, LocalDateTime created);
 
     @Mapping(target = "authorName", source = "comment.author.name")
     CommentDtoResponse toCommentDtoResponse(Comment comment);

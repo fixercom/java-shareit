@@ -94,7 +94,7 @@ public class ItemServiceImpl implements ItemService {
         checkUserHasBookedItemInThePast(userId, itemId);
         Item item = getItemByIdWithoutCheckAccess(itemId);
         User author = getUserById(userId);
-        Comment comment = commentMapper.toComment(commentDtoRequest, item, author);
+        Comment comment = commentMapper.toComment(commentDtoRequest, item, author, LocalDateTime.now());
         Comment savedComment = commentRepository.save(comment);
         log.debug("Comment saved in the database with id={}: {}", savedComment.getId(), item);
         return commentMapper.toCommentDtoResponse(savedComment);
@@ -187,11 +187,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Booking calculateLastBookingFromSortedList(List<Booking> bookings) {
-        return bookings.stream().findFirst().orElse(null);
+        LocalDateTime now = LocalDateTime.now();
+        return bookings.stream()
+                .filter(booking -> booking.getStart().isBefore(now))
+                .reduce((booking, booking2) -> booking2)
+                .orElse(null);
     }
 
     private Booking calculateNextBookingFromSortedList(List<Booking> bookings) {
-        return bookings.stream().skip(1).findFirst().orElse(null);
+        LocalDateTime now = LocalDateTime.now();
+        return bookings.stream()
+                .filter(booking -> booking.getStart().isAfter(now))
+                .findFirst()
+                .orElse(null);
     }
 
     private ItemRequest getItemRequestById(Long id) {

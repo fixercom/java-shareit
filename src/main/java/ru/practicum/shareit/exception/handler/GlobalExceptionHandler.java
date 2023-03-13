@@ -108,9 +108,9 @@ public class GlobalExceptionHandler {
         return new ErrorMessage(400, message);
     }
 
-    @ExceptionHandler(BookingEndDateBeforeStartDateException.class)
+    @ExceptionHandler(IncorrectBookingDatesException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorMessage handleBookingEndDateBeforeStartDateException(BookingEndDateBeforeStartDateException exception) {
+    public ErrorMessage handleIncorrectBookingDatesException(IncorrectBookingDatesException exception) {
         String message = exception.getMessage();
         log.warn("{}BookingEndDateBeforeStartDateException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
         return new ErrorMessage(400, message);

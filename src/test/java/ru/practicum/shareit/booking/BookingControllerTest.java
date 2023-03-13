@@ -13,7 +13,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.entity.State;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.BookingEndDateBeforeStartDateException;
+import ru.practicum.shareit.exception.IncorrectBookingDatesException;
 import ru.practicum.shareit.exception.ItemNotAvailableForBookingException;
 import ru.practicum.shareit.exception.NotPossibleChangeBookingStatusException;
 import ru.practicum.shareit.exception.UnknownStateException;
@@ -80,7 +80,7 @@ class BookingControllerTest {
         LocalDateTime endDate = LocalDateTime.now().minusDays(1);
         BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
         when(bookingService.createBooking(any(BookingDtoRequest.class), anyLong()))
-                .thenThrow(new BookingEndDateBeforeStartDateException(startDate, endDate));
+                .thenThrow(new IncorrectBookingDatesException(startDate, endDate));
         mockMvc.perform(post("/bookings")
                         .header("X-Sharer-User-Id", 3)
                         .content(mapper.writeValueAsString(dtoRequest))

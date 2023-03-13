@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.EmailIsAlreadyInUseException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.entity.User;
@@ -52,9 +51,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto updateUser(Long id, UserDto userDto) {
         User oldUser = getUserByIdWithoutCheckAccess(id);
-        checkUniqueEmail(userDto.getEmail());
         User oldUserWithPatch = userMapper.updateUserFromDto(userDto, oldUser);
-        User updatedUser = userRepository.save(oldUserWithPatch);
+        User updatedUser = userRepository.saveAndFlush(oldUserWithPatch);
         log.debug("User with id={} successfully updated in the database: {}", id, updatedUser);
         return userMapper.toUserDto(updatedUser);
     }
@@ -74,12 +72,6 @@ public class UserServiceImpl implements UserService {
     public void checkUserExists(Long id) {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException(id);
-        }
-    }
-
-    private void checkUniqueEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new EmailIsAlreadyInUseException(email);
         }
     }
 }

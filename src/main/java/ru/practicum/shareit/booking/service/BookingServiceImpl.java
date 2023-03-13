@@ -151,8 +151,8 @@ public class BookingServiceImpl implements BookingService {
     private void checkBookingDates(Booking booking) {
         LocalDateTime startBookingDate = booking.getStart();
         LocalDateTime endBookingDate = booking.getEnd();
-        if (endBookingDate.isBefore(startBookingDate)) {
-            throw new BookingEndDateBeforeStartDateException(startBookingDate, endBookingDate);
+        if (endBookingDate.isBefore(startBookingDate) || endBookingDate.isEqual(startBookingDate)) {
+            throw new IncorrectBookingDatesException(startBookingDate, endBookingDate);
         }
     }
 
