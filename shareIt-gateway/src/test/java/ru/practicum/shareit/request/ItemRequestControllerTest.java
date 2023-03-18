@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.request.dto.ItemRequestDtoIn;
+import ru.practicum.shareit.util.Constants;
 
 import java.nio.charset.StandardCharsets;
 
@@ -30,9 +31,6 @@ class ItemRequestControllerTest {
     private final ItemRequestClient itemRequestClient;
     private final MockMvc mockMvc;
 
-    private static final String H_SHARER_USER_ID_IS_ABSENT_MESSAGE = "Required request header 'X-Sharer-User-Id'" +
-            " for method parameter type Long is not present";
-
     @Test
     void createItemRequest_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
         ItemRequestDtoIn dtoIn = ItemRequestDtoIn.builder()
@@ -45,7 +43,7 @@ class ItemRequestControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
-                .andExpect(jsonPath("$.error", is(H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
+                .andExpect(jsonPath("$.error", is(Constants.H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
         verify(itemRequestClient, never()).createItemRequest(any(ItemRequestDtoIn.class), anyLong());
     }
 
@@ -54,7 +52,7 @@ class ItemRequestControllerTest {
         mockMvc.perform(get("/requests"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
-                .andExpect(jsonPath("$.error", is(H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
+                .andExpect(jsonPath("$.error", is(Constants.H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
         verify(itemRequestClient, never()).getAllOwnItemRequests(anyLong());
     }
 
@@ -63,7 +61,7 @@ class ItemRequestControllerTest {
         mockMvc.perform(get("/requests/all"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
-                .andExpect(jsonPath("$.error", is(H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
+                .andExpect(jsonPath("$.error", is(Constants.H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
         verify(itemRequestClient, never()).getAllOwnItemRequests(anyLong());
     }
 
@@ -72,7 +70,7 @@ class ItemRequestControllerTest {
         mockMvc.perform(get("/requests/5"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
-                .andExpect(jsonPath("$.error", is(H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
+                .andExpect(jsonPath("$.error", is(Constants.H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
         verify(itemRequestClient, never()).getAllOwnItemRequests(anyLong());
     }
 }

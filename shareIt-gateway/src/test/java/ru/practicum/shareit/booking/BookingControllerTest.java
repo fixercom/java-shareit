@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.state.BookingState;
+import ru.practicum.shareit.util.Constants;
 
 import java.nio.charset.StandardCharsets;
 
@@ -28,8 +29,6 @@ class BookingControllerTest {
     @MockBean
     private final BookingClient bookingClient;
     private final MockMvc mockMvc;
-    private static final String H_SHARER_USER_ID_IS_ABSENT_MESSAGE = "Required request header 'X-Sharer-User-Id'" +
-            " for method parameter type Long is not present";
 
     @Test
     void createBooking_whenXSharerUserIdIsAbsent_thenReturnIsBadRequest() throws Exception {
@@ -41,7 +40,7 @@ class BookingControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
-                .andExpect(jsonPath("$.error", is(H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
+                .andExpect(jsonPath("$.error", is(Constants.H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
         verify(bookingClient, never()).createBooking(any(BookingDtoRequest.class), anyLong());
     }
 
@@ -50,7 +49,7 @@ class BookingControllerTest {
         mockMvc.perform(get("/bookings/5"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
-                .andExpect(jsonPath("$.error", is(H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
+                .andExpect(jsonPath("$.error", is(Constants.H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
         verify(bookingClient, never()).getBookingById(anyLong(), anyLong());
     }
 
@@ -59,7 +58,7 @@ class BookingControllerTest {
         mockMvc.perform(get("/bookings"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
-                .andExpect(jsonPath("$.error", is(H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
+                .andExpect(jsonPath("$.error", is(Constants.H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
         verify(bookingClient, never()).getAllByBookerId(anyLong(), any(BookingState.class), anyInt(), anyInt());
     }
 
@@ -68,7 +67,7 @@ class BookingControllerTest {
         mockMvc.perform(get("/bookings/owner"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
-                .andExpect(jsonPath("$.error", is(H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
+                .andExpect(jsonPath("$.error", is(Constants.H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
         verify(bookingClient, never()).getAllByItemOwnerId(anyLong(), any(BookingState.class), anyInt(), anyInt());
     }
 
@@ -93,7 +92,7 @@ class BookingControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode", is(400)))
-                .andExpect(jsonPath("$.error", is(H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
+                .andExpect(jsonPath("$.error", is(Constants.H_SHARER_USER_ID_IS_ABSENT_MESSAGE)));
         verify(bookingClient, never()).updateBooking(anyLong(), anyLong(), anyBoolean());
     }
 
