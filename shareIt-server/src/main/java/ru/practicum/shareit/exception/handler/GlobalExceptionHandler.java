@@ -11,8 +11,6 @@ import ru.practicum.shareit.exception.*;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-    private static final String YELLOW_COLOR_LOG = "\033[33m";
-    private static final String ORIGINAL_COLOR_LOG = "\033[0m";
 
     @ExceptionHandler({UserNotFoundException.class,
             ItemNotFoundException.class,
@@ -21,7 +19,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorMessage handleNotFoundException(RuntimeException exception) {
         String message = exception.getMessage();
-        log.warn("{}{}: {} {}", YELLOW_COLOR_LOG, exception.getClass().getSimpleName(), ORIGINAL_COLOR_LOG, message);
+        log.warn("{}: {}", exception.getClass().getSimpleName(), message);
         return new ErrorMessage(404, message);
     }
 
@@ -29,7 +27,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorMessage handleEmailIsAlreadyInUseException(EmailIsAlreadyInUseException exception) {
         String message = exception.getMessage();
-        log.warn("{}EmailIsAlreadyInUseException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        log.warn("EmailIsAlreadyInUseException: {}", message);
         return new ErrorMessage(409, message);
     }
 
@@ -37,7 +35,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorMessage handleNotOwnerItemException(NotOwnerItemException exception) {
         String message = exception.getMessage();
-        log.warn("{}NotOwnerItemException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        log.warn("NotOwnerItemException: {}", message);
         return new ErrorMessage(403, message);
     }
 
@@ -45,7 +43,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorMessage handleItemNotAvailableForBookingException(ItemNotAvailableForBookingException exception) {
         String message = exception.getMessage();
-        log.warn("{}ItemNotAvailableForBookingException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        log.warn("ItemNotAvailableForBookingException: {}", message);
         return new ErrorMessage(400, message);
     }
 
@@ -54,7 +52,7 @@ public class GlobalExceptionHandler {
     public ErrorMessage handleNotPossibleChangeBookingStatusException(
             NotPossibleChangeBookingStatusException exception) {
         String message = exception.getMessage();
-        log.warn("{}NotPossibleChangeBookingStatusException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        log.warn("NotPossibleChangeBookingStatusException: {}", message);
         return new ErrorMessage(400, message);
     }
 
@@ -62,7 +60,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorMessage handleIncorrectBookingDatesException(IncorrectBookingDatesException exception) {
         String message = exception.getMessage();
-        log.warn("{}BookingEndDateBeforeStartDateException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        log.warn("BookingEndDateBeforeStartDateException: {}", message);
         return new ErrorMessage(400, message);
     }
 
@@ -70,7 +68,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorMessage handleUserDidNotBookingItemException(UserDidNotBookingItemException exception) {
         String message = exception.getMessage();
-        log.warn("{}UserDidNotBookingItemException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        log.warn("UserDidNotBookingItemException: {}", message);
         return new ErrorMessage(400, message);
     }
 
@@ -78,7 +76,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorMessage handleUnknownStateException(UnknownStateException exception) {
         String message = exception.getMessage();
-        log.warn("{}UnknownStateException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        log.warn("UnknownStateException: {}", message);
         return new ErrorMessage(400, message);
     }
 
@@ -86,7 +84,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorMessage handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
         String message = exception.getMessage();
-        log.warn("{}DataIntegrityViolationException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        log.warn("DataIntegrityViolationException: {}", message);
         return new ErrorMessage(409, message);
     }
 }

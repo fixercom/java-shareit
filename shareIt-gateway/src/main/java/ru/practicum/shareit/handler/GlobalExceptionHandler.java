@@ -16,8 +16,6 @@ import java.util.Objects;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-    private static final String YELLOW_COLOR_LOG = "\033[33m";
-    private static final String ORIGINAL_COLOR_LOG = "\033[0m";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -27,8 +25,8 @@ public class GlobalExceptionHandler {
         String fieldName = Objects.requireNonNull(exception.getFieldError()).getField();
         Object rejectedValue = Objects.requireNonNull(exception.getFieldError()).getRejectedValue();
         String message = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
-        log.warn("{}MethodArgumentNotValidException: {}Field {}=\"{}\" is not valid for the reason \"{}\"",
-                YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, fieldName, rejectedValue, message);
+        log.warn("MethodArgumentNotValidException: Field {}=\"{}\" is not valid for the reason \"{}\"",
+                fieldName, rejectedValue, message);
         return new ErrorMessage(400, message);
     }
 
@@ -38,7 +36,7 @@ public class GlobalExceptionHandler {
                                                             HttpServletRequest request) {
         String message = exception.getMessage();
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
-        log.warn("{}MissingRequestHeaderException: {}{}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        log.warn("MissingRequestHeaderException: {}", message);
         return new ErrorMessage(400, message);
     }
 
@@ -48,7 +46,7 @@ public class GlobalExceptionHandler {
                                                                       HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
         String message = exception.getMessage();
-        log.warn("{}MissingServletRequestParameterException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        log.warn("MissingServletRequestParameterException: {}", message);
         return new ErrorMessage(400, message);
     }
 
@@ -58,7 +56,7 @@ public class GlobalExceptionHandler {
                                                            HttpServletRequest request) {
         log.debug("{} request {} received", request.getMethod(), request.getRequestURI());
         String message = exception.getMessage();
-        log.warn("{}ConstraintViolationException:{} {}", YELLOW_COLOR_LOG, ORIGINAL_COLOR_LOG, message);
+        log.warn("ConstraintViolationException: {}", message);
         return new ErrorMessage(400, message);
     }
 }
