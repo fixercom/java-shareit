@@ -19,6 +19,7 @@ import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.util.DateUtils;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -242,8 +243,8 @@ class BookingServiceImplTest {
     Booking createBooking(Long id, Item item, User booker, BookingStatus status) {
         return Booking.builder()
                 .id(id)
-                .start(LocalDateTime.now().plusDays(2))
-                .end(LocalDateTime.now().plusDays(4))
+                .start(DateUtils.now().plusDays(2))
+                .end(DateUtils.now().plusDays(4))
                 .item(item)
                 .booker(booker)
                 .status(status)
@@ -253,8 +254,8 @@ class BookingServiceImplTest {
     private BookingDtoRequest creatBookingDtoRequest(Long itemId) {
         return BookingDtoRequest.builder()
                 .itemId(itemId)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(DateUtils.now())
+                .end(DateUtils.now().plusDays(1))
                 .build();
     }
 }

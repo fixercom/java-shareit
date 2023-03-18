@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.user.entity.User;
+import ru.practicum.shareit.util.DateUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,7 +43,7 @@ class BookingRepositoryTest {
         entityManager.persist(pastBooking2);
 
         List<Booking> pastBookings = bookingRepository
-                .findAllPastUserBookings(booker.getId(), LocalDateTime.now(), PageRequest.of(0, 10));
+                .findAllPastUserBookings(booker.getId(), DateUtils.now(), PageRequest.of(0, 10));
 
         assertThat(pastBookings.size()).isEqualTo(2);
         assertThat(pastBookings).containsExactly(pastBooking1, pastBooking2);
@@ -68,7 +69,7 @@ class BookingRepositoryTest {
         entityManager.persist(currentBooking2);
 
         List<Booking> pastBookings = bookingRepository
-                .findAllCurrentUserBookings(booker.getId(), LocalDateTime.now(), PageRequest.of(0, 10));
+                .findAllCurrentUserBookings(booker.getId(), DateUtils.now(), PageRequest.of(0, 10));
 
         assertThat(pastBookings.size()).isEqualTo(2);
         assertThat(pastBookings).containsExactly(currentBooking1, currentBooking2);
@@ -92,7 +93,7 @@ class BookingRepositoryTest {
     Booking createPastBooking(Item item, User booker, BookingStatus status) {
         return Booking.builder()
                 .start(LocalDateTime.MIN)
-                .end(LocalDateTime.now().minusSeconds(1))
+                .end(DateUtils.now().minusSeconds(1))
                 .item(item)
                 .booker(booker)
                 .status(status)
@@ -101,8 +102,8 @@ class BookingRepositoryTest {
 
     Booking createCurrentBooking(Item item, User booker, BookingStatus status) {
         return Booking.builder()
-                .start(LocalDateTime.now().minusSeconds(1))
-                .end(LocalDateTime.now().plusHours(1))
+                .start(DateUtils.now().minusSeconds(1))
+                .end(DateUtils.now().plusHours(1))
                 .item(item)
                 .booker(booker)
                 .status(status)

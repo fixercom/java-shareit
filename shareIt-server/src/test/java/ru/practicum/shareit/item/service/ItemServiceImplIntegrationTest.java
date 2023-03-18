@@ -15,8 +15,8 @@ import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.util.DateUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,8 +45,8 @@ class ItemServiceImplIntegrationTest {
         Item item3 = createItem("3", itemOwner);
         itemRepository.saveAll(List.of(item1, item2, item3));
         Booking booking = Booking.builder()
-                .start(LocalDateTime.now().minusDays(1))
-                .end(LocalDateTime.now().plusDays(2))
+                .start(DateUtils.now().minusDays(1))
+                .end(DateUtils.now().plusDays(2))
                 .item(item1)
                 .booker(anotherUser)
                 .status(BookingStatus.APPROVED)
@@ -56,13 +56,13 @@ class ItemServiceImplIntegrationTest {
                 .text("Comment1")
                 .item(item3)
                 .author(commentAuthor)
-                .created(LocalDateTime.now())
+                .created(DateUtils.now())
                 .build();
         Comment comment2ForItem3 = Comment.builder()
                 .text("Comment2")
                 .item(item3)
                 .author(commentAuthor)
-                .created(LocalDateTime.now())
+                .created(DateUtils.now())
                 .build();
         commentRepository.saveAll(List.of(comment1ForItem3, comment2ForItem3));
 

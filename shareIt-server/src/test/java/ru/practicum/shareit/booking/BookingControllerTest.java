@@ -17,6 +17,7 @@ import ru.practicum.shareit.exception.IncorrectBookingDatesException;
 import ru.practicum.shareit.exception.ItemNotAvailableForBookingException;
 import ru.practicum.shareit.exception.NotPossibleChangeBookingStatusException;
 import ru.practicum.shareit.exception.UnknownStateException;
+import ru.practicum.shareit.util.DateUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -54,8 +55,8 @@ class BookingControllerTest {
 
     @Test
     void createBooking_whenDatesAreIncorrect_thenReturnIsBadRequest() throws Exception {
-        LocalDateTime startDate = LocalDateTime.now();
-        LocalDateTime endDate = LocalDateTime.now().minusDays(1);
+        LocalDateTime startDate = DateUtils.now();
+        LocalDateTime endDate = DateUtils.now().minusDays(1);
         BookingDtoRequest dtoRequest = BookingDtoRequest.builder().build();
         when(bookingService.createBooking(any(BookingDtoRequest.class), anyLong()))
                 .thenThrow(new IncorrectBookingDatesException(startDate, endDate));

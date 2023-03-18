@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.util.Constants;
+import ru.practicum.shareit.util.DateUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -37,8 +38,8 @@ class BookingDtoResponseTest {
                 .build();
         BookingDtoResponse bookingDtoResponse = BookingDtoResponse.builder()
                 .id(3L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(10))
+                .start(DateUtils.now())
+                .end(DateUtils.now().plusDays(10))
                 .status(BookingStatus.APPROVED)
                 .booker(userDto)
                 .item(itemDtoResponse)

@@ -7,16 +7,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.entity.Booking;
-import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.entity.BookingState;
+import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.util.DateUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -138,8 +138,8 @@ class BookingServiceImplIntegrationTest {
 
     Booking createPastBooking(Item item, User booker) {
         return Booking.builder()
-                .start(LocalDateTime.now().minusDays(2))
-                .end(LocalDateTime.now().minusDays(1))
+                .start(DateUtils.now().minusDays(2))
+                .end(DateUtils.now().minusDays(1))
                 .item(item)
                 .booker(booker)
                 .status(BookingStatus.CANCELED)
@@ -149,8 +149,8 @@ class BookingServiceImplIntegrationTest {
 
     private Booking createCurrentBooking(Item item, User booker) {
         return Booking.builder()
-                .start(LocalDateTime.now().minusDays(1))
-                .end(LocalDateTime.now().plusDays(1))
+                .start(DateUtils.now().minusDays(1))
+                .end(DateUtils.now().plusDays(1))
                 .item(item)
                 .booker(booker)
                 .status(BookingStatus.APPROVED)
@@ -159,8 +159,8 @@ class BookingServiceImplIntegrationTest {
 
     Booking createFutureBooking(Item item, User booker) {
         return Booking.builder()
-                .start(LocalDateTime.now().plusDays(1))
-                .end(LocalDateTime.now().plusDays(2))
+                .start(DateUtils.now().plusDays(1))
+                .end(DateUtils.now().plusDays(2))
                 .item(item)
                 .booker(booker)
                 .status(BookingStatus.WAITING)
@@ -169,8 +169,8 @@ class BookingServiceImplIntegrationTest {
 
     Booking createRejectedBooking(Item item, User booker) {
         return Booking.builder()
-                .start(LocalDateTime.now().minusDays(1))
-                .end(LocalDateTime.now().plusDays(3))
+                .start(DateUtils.now().minusDays(1))
+                .end(DateUtils.now().plusDays(3))
                 .item(item)
                 .booker(booker)
                 .status(BookingStatus.REJECTED)

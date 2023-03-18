@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import ru.practicum.shareit.util.Constants;
+import ru.practicum.shareit.util.DateUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -22,8 +23,8 @@ class BookingDtoForItemTest {
     void serializeInCorrectFormat() throws IOException {
         BookingDtoForItem dto = BookingDtoForItem.builder()
                 .id(7L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(10))
+                .start(DateUtils.now())
+                .end(DateUtils.now().plusDays(10))
                 .bookerId(3L)
                 .build();
 

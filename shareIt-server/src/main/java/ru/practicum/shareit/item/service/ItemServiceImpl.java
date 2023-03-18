@@ -21,6 +21,7 @@ import ru.practicum.shareit.request.entity.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.util.DateUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -95,7 +96,7 @@ public class ItemServiceImpl implements ItemService {
         checkUserHasBookedItemInThePast(userId, itemId);
         Item item = getItemByIdWithoutCheckAccess(itemId);
         User author = getUserById(userId);
-        Comment comment = commentMapper.toComment(commentDtoRequest, item, author, LocalDateTime.now());
+        Comment comment = commentMapper.toComment(commentDtoRequest, item, author, DateUtils.now());
         Comment savedComment = commentRepository.save(comment);
         log.debug("Comment saved in the database with id={}: {}", savedComment.getId(), item);
         return commentMapper.toCommentDtoResponse(savedComment);
@@ -111,7 +112,7 @@ public class ItemServiceImpl implements ItemService {
 
     private void checkUserHasBookedItemInThePast(Long userId, Long itemId) {
         List<Booking> bookings =
-                bookingRepository.findAllRealItemBookingsForUserAtTheMoment(itemId, userId, LocalDateTime.now());
+                bookingRepository.findAllRealItemBookingsForUserAtTheMoment(itemId, userId, DateUtils.now());
         if (bookings.isEmpty()) {
             throw new UserDidNotBookingItemException(userId, itemId);
         }
@@ -188,7 +189,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Booking calculateLastBookingFromSortedList(List<Booking> bookings) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateUtils.now();
         return bookings.stream()
                 .filter(booking -> booking.getStart().isBefore(now))
                 .reduce((booking, booking2) -> booking2)
@@ -196,7 +197,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Booking calculateNextBookingFromSortedList(List<Booking> bookings) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateUtils.now();
         return bookings.stream()
                 .filter(booking -> booking.getStart().isAfter(now))
                 .findFirst()

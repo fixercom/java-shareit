@@ -8,8 +8,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import ru.practicum.shareit.item.entity.Comment;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.user.entity.User;
+import ru.practicum.shareit.util.DateUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,13 +37,13 @@ class CommentRepositoryTest {
                 .text("comment1")
                 .item(item)
                 .author(commenter)
-                .created(LocalDateTime.now())
+                .created(DateUtils.now())
                 .build();
         Comment comment2 = Comment.builder()
                 .text("comment2")
                 .item(item)
                 .author(commenter)
-                .created(LocalDateTime.now())
+                .created(DateUtils.now())
                 .build();
         entityManager.persist(comment1);
         entityManager.persist(comment2);

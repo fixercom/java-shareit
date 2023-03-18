@@ -19,8 +19,8 @@ import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.util.DateUtils;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -38,7 +38,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional
     public ItemRequestDtoOut createItemRequest(ItemRequestDtoIn itemRequestDtoIn, Long userId) {
         User requester = userService.getUserEntityById(userId);
-        ItemRequest itemRequest = itemRequestMapper.toItemRequest(itemRequestDtoIn, requester, LocalDateTime.now());
+        ItemRequest itemRequest = itemRequestMapper.toItemRequest(itemRequestDtoIn, requester, DateUtils.now());
         itemRequest.setRequester(requester);
         ItemRequestDtoOut dtoOut = itemRequestMapper.toItemRequestDtoOut(itemRequestRepository.save(itemRequest));
         log.debug("Item request saved in the database with id={}: {}", dtoOut.getId(), dtoOut);

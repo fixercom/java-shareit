@@ -10,8 +10,8 @@ import ru.practicum.shareit.request.entity.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.util.DateUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,12 +33,12 @@ class ItemRequestServiceImplIntegrationTest {
         ItemRequest itemRequest1 = ItemRequest.builder()
                 .description("Hummer")
                 .requester(itemRequestOwner)
-                .created(LocalDateTime.now())
+                .created(DateUtils.now())
                 .build();
         ItemRequest itemRequest2 = ItemRequest.builder()
                 .description("Puncher")
                 .requester(anotherUser)
-                .created(LocalDateTime.now())
+                .created(DateUtils.now())
                 .build();
         itemRequestRepository.saveAll(List.of(itemRequest1, itemRequest2));
 

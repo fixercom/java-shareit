@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.entity.Booking;
-import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.entity.BookingState;
+import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.*;
@@ -19,6 +19,7 @@ import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.util.DateUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -64,11 +65,11 @@ public class BookingServiceImpl implements BookingService {
         if (state == BookingState.ALL) {
             bookings = bookingRepository.findAllUserBookings(userId, pageable);
         } else if (state == BookingState.PAST) {
-            bookings = bookingRepository.findAllPastUserBookings(userId, LocalDateTime.now(), pageable);
+            bookings = bookingRepository.findAllPastUserBookings(userId, DateUtils.now(), pageable);
         } else if (state == BookingState.CURRENT) {
-            bookings = bookingRepository.findAllCurrentUserBookings(userId, LocalDateTime.now(), pageable);
+            bookings = bookingRepository.findAllCurrentUserBookings(userId, DateUtils.now(), pageable);
         } else if (state == BookingState.FUTURE) {
-            bookings = bookingRepository.findAllFutureUserBookings(userId, LocalDateTime.now(), pageable);
+            bookings = bookingRepository.findAllFutureUserBookings(userId, DateUtils.now(), pageable);
         } else if (state == BookingState.WAITING) {
             bookings = bookingRepository.findAllByBookerIdAndStatus(userId, BookingStatus.WAITING, pageable);
         } else if (state == BookingState.REJECTED) {
@@ -88,11 +89,11 @@ public class BookingServiceImpl implements BookingService {
         if (state == BookingState.ALL) {
             bookings = bookingRepository.findAllItemOwnerBookings(userId, pageable);
         } else if (state == BookingState.PAST) {
-            bookings = bookingRepository.findAllPastItemOwnerBookings(userId, LocalDateTime.now(), pageable);
+            bookings = bookingRepository.findAllPastItemOwnerBookings(userId, DateUtils.now(), pageable);
         } else if (state == BookingState.CURRENT) {
-            bookings = bookingRepository.findAllCurrentItemOwnerBookings(userId, LocalDateTime.now(), pageable);
+            bookings = bookingRepository.findAllCurrentItemOwnerBookings(userId, DateUtils.now(), pageable);
         } else if (state == BookingState.FUTURE) {
-            bookings = bookingRepository.findAllFutureItemOwnerBookings(userId, LocalDateTime.now(), pageable);
+            bookings = bookingRepository.findAllFutureItemOwnerBookings(userId, DateUtils.now(), pageable);
         } else if (state == BookingState.WAITING) {
             bookings = bookingRepository.findAllByItemOwnerIdAndStatus(userId, BookingStatus.WAITING, pageable);
         } else if (state == BookingState.REJECTED) {
