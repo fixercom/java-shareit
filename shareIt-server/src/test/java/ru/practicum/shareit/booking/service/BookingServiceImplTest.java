@@ -11,7 +11,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
-import ru.practicum.shareit.booking.entity.State;
+import ru.practicum.shareit.booking.entity.BookingState;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.*;
@@ -195,7 +195,8 @@ class BookingServiceImplTest {
     void getAllByBookerId_whenStateIsUnknown_thenThrowException() {
         when(userRepository.existsById(anyLong())).thenReturn(true);
 
-        assertThatThrownBy(() -> bookingService.getAllByBookerId(1L, State.UNSUPPORTED_STATUS, 0, 10))
+        assertThatThrownBy(() -> bookingService.getAllByBookerId(1L, BookingState.UNSUPPORTED_STATUS,
+                0, 10))
                 .isInstanceOf(UnknownStateException.class)
                 .hasMessage("Unknown state: UNSUPPORTED_STATUS");
     }
@@ -205,7 +206,8 @@ class BookingServiceImplTest {
         Long userId = 99L;
         when(userRepository.existsById(userId)).thenReturn(false);
 
-        assertThatThrownBy(() -> bookingService.getAllByBookerId(userId, State.UNSUPPORTED_STATUS, 0, 10))
+        assertThatThrownBy(() -> bookingService.getAllByBookerId(userId, BookingState.UNSUPPORTED_STATUS,
+                0, 10))
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessage("There is no user with id=%s in the database", userId);
     }
@@ -214,7 +216,8 @@ class BookingServiceImplTest {
     void getAllByItemOwnerId_whenStateIsUnknown_thenThrowException() {
         when(userRepository.existsById(anyLong())).thenReturn(true);
 
-        assertThatThrownBy(() -> bookingService.getAllByItemOwnerId(1L, State.UNSUPPORTED_STATUS, 0, 10))
+        assertThatThrownBy(() -> bookingService.getAllByItemOwnerId(1L, BookingState.UNSUPPORTED_STATUS,
+                0, 10))
                 .isInstanceOf(UnknownStateException.class)
                 .hasMessage("Unknown state: UNSUPPORTED_STATUS");
     }

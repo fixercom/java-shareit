@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
-import ru.practicum.shareit.booking.entity.State;
+import ru.practicum.shareit.booking.entity.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.util.HeaderName;
 
@@ -37,7 +37,7 @@ public class BookingController {
 
     @GetMapping()
     public List<BookingDtoResponse> getAllByBookerId(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
-                                                     @RequestParam(defaultValue = "ALL") State state,
+                                                     @RequestParam(defaultValue = "ALL") BookingState state,
                                                      @RequestParam(defaultValue = "0") Integer from,
                                                      @RequestParam(defaultValue = "100") Integer size,
                                                      HttpServletRequest request) {
@@ -47,7 +47,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingDtoResponse> getAllByItemOwnerId(@RequestHeader(HeaderName.SHARER_USER_ID) Long userId,
-                                                        @RequestParam(defaultValue = "ALL") State state,
+                                                        @RequestParam(defaultValue = "ALL") BookingState state,
                                                         @RequestParam(defaultValue = "0") Integer from,
                                                         @RequestParam(defaultValue = "100") Integer size,
                                                         HttpServletRequest request) {

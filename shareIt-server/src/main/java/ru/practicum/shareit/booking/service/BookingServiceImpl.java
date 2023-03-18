@@ -11,7 +11,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
-import ru.practicum.shareit.booking.entity.State;
+import ru.practicum.shareit.booking.entity.BookingState;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.*;
@@ -57,48 +57,48 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoResponse> getAllByBookerId(Long userId, State state, Integer from, Integer size) {
+    public List<BookingDtoResponse> getAllByBookerId(Long userId, BookingState state, Integer from, Integer size) {
         checkUserExists(userId);
         Pageable pageable = PageRequest.of(from / size, size, Sort.by("start").descending());
         List<Booking> bookings;
-        if (state == State.ALL) {
+        if (state == BookingState.ALL) {
             bookings = bookingRepository.findAllUserBookings(userId, pageable);
-        } else if (state == State.PAST) {
+        } else if (state == BookingState.PAST) {
             bookings = bookingRepository.findAllPastUserBookings(userId, LocalDateTime.now(), pageable);
-        } else if (state == State.CURRENT) {
+        } else if (state == BookingState.CURRENT) {
             bookings = bookingRepository.findAllCurrentUserBookings(userId, LocalDateTime.now(), pageable);
-        } else if (state == State.FUTURE) {
+        } else if (state == BookingState.FUTURE) {
             bookings = bookingRepository.findAllFutureUserBookings(userId, LocalDateTime.now(), pageable);
-        } else if (state == State.WAITING) {
+        } else if (state == BookingState.WAITING) {
             bookings = bookingRepository.findAllByBookerIdAndStatus(userId, BookingStatus.WAITING, pageable);
-        } else if (state == State.REJECTED) {
+        } else if (state == BookingState.REJECTED) {
             bookings = bookingRepository.findAllByBookerIdAndStatus(userId, BookingStatus.REJECTED, pageable);
         } else {
-            throw new UnknownStateException(State.UNSUPPORTED_STATUS);
+            throw new UnknownStateException(BookingState.UNSUPPORTED_STATUS);
         }
         log.debug("Received a list of bookings for the user with id={}", userId);
         return bookingMapper.toBookingDtoResponseList(bookings);
     }
 
     @Override
-    public List<BookingDtoResponse> getAllByItemOwnerId(Long userId, State state, Integer from, Integer size) {
+    public List<BookingDtoResponse> getAllByItemOwnerId(Long userId, BookingState state, Integer from, Integer size) {
         checkUserExists(userId);
         Pageable pageable = PageRequest.of(from / size, size, Sort.by("start").descending());
         List<Booking> bookings;
-        if (state == State.ALL) {
+        if (state == BookingState.ALL) {
             bookings = bookingRepository.findAllItemOwnerBookings(userId, pageable);
-        } else if (state == State.PAST) {
+        } else if (state == BookingState.PAST) {
             bookings = bookingRepository.findAllPastItemOwnerBookings(userId, LocalDateTime.now(), pageable);
-        } else if (state == State.CURRENT) {
+        } else if (state == BookingState.CURRENT) {
             bookings = bookingRepository.findAllCurrentItemOwnerBookings(userId, LocalDateTime.now(), pageable);
-        } else if (state == State.FUTURE) {
+        } else if (state == BookingState.FUTURE) {
             bookings = bookingRepository.findAllFutureItemOwnerBookings(userId, LocalDateTime.now(), pageable);
-        } else if (state == State.WAITING) {
+        } else if (state == BookingState.WAITING) {
             bookings = bookingRepository.findAllByItemOwnerIdAndStatus(userId, BookingStatus.WAITING, pageable);
-        } else if (state == State.REJECTED) {
+        } else if (state == BookingState.REJECTED) {
             bookings = bookingRepository.findAllByItemOwnerIdAndStatus(userId, BookingStatus.REJECTED, pageable);
         } else {
-            throw new UnknownStateException(State.UNSUPPORTED_STATUS);
+            throw new UnknownStateException(BookingState.UNSUPPORTED_STATUS);
         }
         log.debug("Received a list of bookings for the user's own items for user with id={}", userId);
         return bookingMapper.toBookingDtoResponseList(bookings);

@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.entity.BookingStatus;
-import ru.practicum.shareit.booking.entity.State;
+import ru.practicum.shareit.booking.entity.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exception.IncorrectBookingDatesException;
 import ru.practicum.shareit.exception.ItemNotAvailableForBookingException;
@@ -110,13 +110,15 @@ class BookingControllerTest {
                 BookingDtoResponse.builder().build(),
                 BookingDtoResponse.builder().build()
         );
-        when(bookingService.getAllByBookerId(anyLong(), any(State.class), anyInt(), anyInt())).thenReturn(allBookings);
+        when(bookingService.getAllByBookerId(anyLong(), any(BookingState.class), anyInt(), anyInt()))
+                .thenReturn(allBookings);
         mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", 7)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()", is(2)));
-        verify(bookingService, times(1)).getAllByBookerId(7L, State.ALL, 0, 100);
+        verify(bookingService, times(1))
+                .getAllByBookerId(7L, BookingState.ALL, 0, 100);
     }
 
     @Test
@@ -125,19 +127,21 @@ class BookingControllerTest {
                 BookingDtoResponse.builder().build(),
                 BookingDtoResponse.builder().build()
         );
-        when(bookingService.getAllByBookerId(anyLong(), any(State.class), anyInt(), anyInt())).thenReturn(allBookings);
+        when(bookingService.getAllByBookerId(anyLong(), any(BookingState.class), anyInt(), anyInt()))
+                .thenReturn(allBookings);
         mockMvc.perform(get("/bookings?from=10&size=5")
                         .header("X-Sharer-User-Id", 7)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()", is(2)));
-        verify(bookingService, times(1)).getAllByBookerId(7L, State.ALL, 10, 5);
+        verify(bookingService, times(1))
+                .getAllByBookerId(7L, BookingState.ALL, 10, 5);
     }
 
     @Test
     void getAllByBookerId_whenUnknownState_thenReturnIsBadRequest() throws Exception {
-        when(bookingService.getAllByBookerId(anyLong(), any(State.class), anyInt(), anyInt()))
-                .thenThrow(new UnknownStateException(State.UNSUPPORTED_STATUS));
+        when(bookingService.getAllByBookerId(anyLong(), any(BookingState.class), anyInt(), anyInt()))
+                .thenThrow(new UnknownStateException(BookingState.UNSUPPORTED_STATUS));
         mockMvc.perform(get("/bookings?state=UNSUPPORTED_STATUS&from=10&size=5")
                         .header("X-Sharer-User-Id", 7)
                         .accept(MediaType.APPLICATION_JSON))
@@ -145,7 +149,7 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.statusCode", is(400)))
                 .andExpect(jsonPath("$.error", is("Unknown state: UNSUPPORTED_STATUS")));
         verify(bookingService, times(1))
-                .getAllByBookerId(7L, State.UNSUPPORTED_STATUS, 10, 5);
+                .getAllByBookerId(7L, BookingState.UNSUPPORTED_STATUS, 10, 5);
     }
 
     @Test
@@ -154,7 +158,7 @@ class BookingControllerTest {
                 BookingDtoResponse.builder().build(),
                 BookingDtoResponse.builder().build()
         );
-        when(bookingService.getAllByItemOwnerId(anyLong(), any(State.class), anyInt(), anyInt()))
+        when(bookingService.getAllByItemOwnerId(anyLong(), any(BookingState.class), anyInt(), anyInt()))
                 .thenReturn(allBookings);
         mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", 7)
@@ -162,7 +166,7 @@ class BookingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()", is(2)));
         verify(bookingService, times(1))
-                .getAllByItemOwnerId(7L, State.ALL, 0, 100);
+                .getAllByItemOwnerId(7L, BookingState.ALL, 0, 100);
     }
 
     @Test
@@ -171,7 +175,7 @@ class BookingControllerTest {
                 BookingDtoResponse.builder().build(),
                 BookingDtoResponse.builder().build()
         );
-        when(bookingService.getAllByItemOwnerId(anyLong(), any(State.class), anyInt(), anyInt()))
+        when(bookingService.getAllByItemOwnerId(anyLong(), any(BookingState.class), anyInt(), anyInt()))
                 .thenReturn(allBookings);
         mockMvc.perform(get("/bookings/owner?from=10&size=5")
                         .header("X-Sharer-User-Id", 7)
@@ -179,7 +183,7 @@ class BookingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()", is(2)));
         verify(bookingService, times(1))
-                .getAllByItemOwnerId(7L, State.ALL, 10, 5);
+                .getAllByItemOwnerId(7L, BookingState.ALL, 10, 5);
     }
 
     @Test

@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
-import ru.practicum.shareit.booking.entity.State;
+import ru.practicum.shareit.booking.entity.BookingState;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.entity.Item;
@@ -49,12 +49,18 @@ class BookingServiceImplIntegrationTest {
         Booking rejectedBooking = createRejectedBooking(item5, booker);
         bookingRepository.saveAll(List.of(pastBooking, currentBooking, futureBooking, rejectedBooking));
 
-        List<BookingDtoResponse> all = bookingService.getAllByBookerId(bookerId, State.ALL, 0, 10);
-        List<BookingDtoResponse> past = bookingService.getAllByBookerId(bookerId, State.PAST, 0, 10);
-        List<BookingDtoResponse> current = bookingService.getAllByBookerId(bookerId, State.CURRENT, 0, 10);
-        List<BookingDtoResponse> future = bookingService.getAllByBookerId(bookerId, State.FUTURE, 0, 10);
-        List<BookingDtoResponse> waiting = bookingService.getAllByBookerId(bookerId, State.WAITING, 0, 10);
-        List<BookingDtoResponse> rejected = bookingService.getAllByBookerId(bookerId, State.REJECTED, 0, 10);
+        List<BookingDtoResponse> all = bookingService
+                .getAllByBookerId(bookerId, BookingState.ALL, 0, 10);
+        List<BookingDtoResponse> past = bookingService
+                .getAllByBookerId(bookerId, BookingState.PAST, 0, 10);
+        List<BookingDtoResponse> current = bookingService
+                .getAllByBookerId(bookerId, BookingState.CURRENT, 0, 10);
+        List<BookingDtoResponse> future = bookingService
+                .getAllByBookerId(bookerId, BookingState.FUTURE, 0, 10);
+        List<BookingDtoResponse> waiting = bookingService
+                .getAllByBookerId(bookerId, BookingState.WAITING, 0, 10);
+        List<BookingDtoResponse> rejected = bookingService
+                .getAllByBookerId(bookerId, BookingState.REJECTED, 0, 10);
 
         assertThat(all.size()).isEqualTo(4);
         assertThat(past.size()).isEqualTo(1);
@@ -88,12 +94,18 @@ class BookingServiceImplIntegrationTest {
         Booking rejectedBooking = createRejectedBooking(item5, booker);
         bookingRepository.saveAll(List.of(pastBooking, currentBooking, futureBooking, rejectedBooking));
 
-        List<BookingDtoResponse> all = bookingService.getAllByItemOwnerId(ownerId, State.ALL, 0, 10);
-        List<BookingDtoResponse> past = bookingService.getAllByItemOwnerId(ownerId, State.PAST, 0, 10);
-        List<BookingDtoResponse> current = bookingService.getAllByItemOwnerId(ownerId, State.CURRENT, 0, 10);
-        List<BookingDtoResponse> future = bookingService.getAllByItemOwnerId(ownerId, State.FUTURE, 0, 10);
-        List<BookingDtoResponse> waiting = bookingService.getAllByItemOwnerId(ownerId, State.WAITING, 0, 10);
-        List<BookingDtoResponse> rejected = bookingService.getAllByItemOwnerId(ownerId, State.REJECTED, 0, 10);
+        List<BookingDtoResponse> all = bookingService
+                .getAllByItemOwnerId(ownerId, BookingState.ALL, 0, 10);
+        List<BookingDtoResponse> past = bookingService
+                .getAllByItemOwnerId(ownerId, BookingState.PAST, 0, 10);
+        List<BookingDtoResponse> current = bookingService
+                .getAllByItemOwnerId(ownerId, BookingState.CURRENT, 0, 10);
+        List<BookingDtoResponse> future = bookingService
+                .getAllByItemOwnerId(ownerId, BookingState.FUTURE, 0, 10);
+        List<BookingDtoResponse> waiting = bookingService
+                .getAllByItemOwnerId(ownerId, BookingState.WAITING, 0, 10);
+        List<BookingDtoResponse> rejected = bookingService
+                .getAllByItemOwnerId(ownerId, BookingState.REJECTED, 0, 10);
 
         assertThat(all.size()).isEqualTo(4);
         assertThat(past.size()).isEqualTo(1);
