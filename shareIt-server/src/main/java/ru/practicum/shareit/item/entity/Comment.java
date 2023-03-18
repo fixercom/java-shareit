@@ -20,7 +20,7 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 1000, nullable = false)
+    @Column(name = "comment_text", length = 1000, nullable = false)
     private String text;
     @ManyToOne(optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
